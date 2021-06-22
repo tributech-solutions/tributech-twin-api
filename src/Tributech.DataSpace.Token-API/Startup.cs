@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Tributech.DataSpace.Common.Auth;
 using Tributech.DataSpace.Common.Auth.ApiAuth;
+using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Utils;
 
 namespace Tributech.DataSpace.TwinAPI {
@@ -30,6 +31,9 @@ namespace Tributech.DataSpace.TwinAPI {
 
 			services.AddHealthChecks();
 			services.AddRouting(options => options.LowercaseUrls = true);
+
+			services.AddInfrastructure(Configuration);
+
 
 			services.AddControllers();
 			services.AddSwaggerCustom(apiAuthOptions);

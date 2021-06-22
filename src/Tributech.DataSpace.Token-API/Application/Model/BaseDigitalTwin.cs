@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Tributech.DataSpace.TwinAPI.Model {
+namespace Tributech.DataSpace.TwinAPI.Application.Model {
 
-	public record BaseDigitalTwin {
+	public class BaseDigitalTwin {
 
 		[JsonPropertyName("$dtId")]
-		public string Id { get; set; }
+		public Guid Id { get; set; }
 
 		[JsonPropertyName("$etag")]
 		public string ETag { get; set; }
