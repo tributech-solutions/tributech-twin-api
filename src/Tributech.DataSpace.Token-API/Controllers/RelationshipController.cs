@@ -18,17 +18,17 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		[HttpGet("{relationshipId}")]
-		public BaseDigitalTwin GetRelationship(Guid relationshipId) {
+		public DigitalTwin GetRelationship(Guid relationshipId) {
 			return null;
 		}
 
 		[HttpPost]
-		public BaseDigitalTwin CreateRelationship([FromBody] BasicRelationship relationship) {
+		public DigitalTwin CreateRelationship([FromBody] Relationship relationship) {
 			return null;
 		}
 
 		[HttpPut("{relationshipId}")]
-		public void UpsertRelationship(Guid dtid, [FromBody] BasicRelationship relationship) {
+		public void UpsertRelationship(Guid dtid, [FromBody] Relationship relationship) {
 		}
 
 		[HttpDelete("{relationshipId}")]

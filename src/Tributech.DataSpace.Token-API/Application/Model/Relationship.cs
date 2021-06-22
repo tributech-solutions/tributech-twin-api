@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j.Common;
 
 namespace Tributech.DataSpace.TwinAPI.Application.Model {
-	public class BasicRelationship {
+	public class Relationship : BaseRelationship {
+
+		public Relationship() : base(nameof(Relationship)) { }
 
 		[JsonPropertyName("$relationshipId")]
 		public Guid Id { get; set; }

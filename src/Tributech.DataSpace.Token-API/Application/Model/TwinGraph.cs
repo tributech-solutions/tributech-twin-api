@@ -6,10 +6,10 @@ namespace Tributech.DataSpace.TwinAPI.Application.Model {
 		public TwinGraphFileInfo FileInfo { get; set; }
 
 		[JsonPropertyName("digitalTwins")]
-		public BaseDigitalTwin[] DigitalTwins { get; set; }
+		public DigitalTwin[] DigitalTwins { get; set; }
 
 		[JsonPropertyName("relationships")]
-		public BasicRelationship[] Relationships { get; set; }
+		public Relationship[] Relationships { get; set; }
 	}
 
 	public class TwinGraphFileInfo {
