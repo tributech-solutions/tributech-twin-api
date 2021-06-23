@@ -8,6 +8,7 @@ using Tributech.DataSpace.Common.Auth;
 using Tributech.DataSpace.Common.Auth.ApiAuth;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Utils;
+using Newtonsoft.Json;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {
@@ -35,7 +36,7 @@ namespace Tributech.DataSpace.TwinAPI {
 			services.AddInfrastructure(Configuration);
 
 
-			services.AddControllers();
+			services.AddControllers().AddNewtonsoftJson();
 			services.AddSwaggerCustom(apiAuthOptions);
 
 		}

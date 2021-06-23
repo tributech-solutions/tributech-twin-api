@@ -1,5 +1,4 @@
-﻿using System;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+﻿using Tributech.DataSpace.TwinAPI.Application.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Application.Infrastructure {
 	public interface ISchemaCache {

@@ -7,6 +7,10 @@ using Neo4jClient;
 using Microsoft.Extensions.Options;
 using System;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
+using Newtonsoft.Json;
+using Tributech.DataSpace.TwinAPI.Application.Model;
+using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Linq;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure
 {
@@ -21,6 +25,9 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
 				var options = provider.GetService<IOptions<Neo4jOptions>>();
 				var client = new BoltGraphClient(new Uri(options.Value.Host), username: options.Value.User, password: options.Value.Password);
 				client.ConnectAsync().Wait();
+
+
+				client.JsonConverters.Add(new DigitalTwinConverter());
 
 				return client;
 			});
@@ -39,4 +46,19 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
             return services;
         }
     }
+
+	public class DigitalTwinConverter : JsonConverter<DigitalTwinNode> {
+		public override DigitalTwinNode ReadJson(JsonReader reader, Type objectType, [AllowNull] DigitalTwinNode existingValue, bool hasExistingValue, JsonSerializer serializer) {
+			var jo = JObject.Load(reader);
+			var dataNode = jo["data"];
+			var stringified = dataNode.ToString();
+			return JsonConvert.DeserializeObject<DigitalTwinNode>(stringified);
+		}
+
+		public override bool CanWrite => false;
+
+		public override void WriteJson(JsonWriter writer, [AllowNull] DigitalTwinNode value, JsonSerializer serializer) {
+			throw new NotImplementedException();
+		}
+	}
 }

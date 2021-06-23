@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Tributech.DataSpace.TwinAPI.Model {
 	public class TwinDto {

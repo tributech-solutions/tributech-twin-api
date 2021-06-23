@@ -27,7 +27,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 
 		[HttpGet("{dtid}")]
 		public Task<DigitalTwin> GetTwin(Guid dtid) {
-			return null;
+			return _twinRepository.GetTwin(dtid);
 		}
 
 		[HttpPost]
@@ -36,11 +36,13 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		[HttpPut("{dtid}")]
-		public void UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
+		public Task<DigitalTwin> UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
+			return _twinRepository.UpsertTwinAsync(twin);
 		}
 
 		[HttpDelete("{dtid}")]
-		public void Delete(Guid dtid) {
+		public Task<DigitalTwin> Delete(Guid dtid) {
+			return _twinRepository.DeleteTwinAsync(dtid);
 		}
 	}
 }

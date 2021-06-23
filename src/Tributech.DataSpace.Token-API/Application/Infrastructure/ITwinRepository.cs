@@ -10,7 +10,7 @@ namespace Tributech.DataSpace.TwinAPI.Application.Infrastructure {
 		public Task<DigitalTwin> DeleteTwinAsync(Guid twinId);
 		public Task<DigitalTwin> GetTwin(Guid twinId);
 		public Task<PaginatedResponse<DigitalTwin>> GetTwinsPaginated(uint pageNumber, uint pageSize);
-		public Task<RelationshipDto> CreateRelationshipAsync();
-		public Task<RelationshipDto> DeleteRelationshipAsync();
+		public Task<Relationship> CreateRelationshipAsync(Relationship relationship);
+		public Task<Relationship> DeleteRelationshipAsync(Guid relationshipId);
 	}
 }
