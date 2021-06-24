@@ -8,6 +8,8 @@ using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Options;
 using Tributech.DataSpace.TwinAPI.Utils;
+using Tributech.DataSpace.TwinAPI.Options;
+using Tributech.DataSpace.TwinAPI.Extensions;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {
@@ -35,7 +37,14 @@ namespace Tributech.DataSpace.TwinAPI {
 			services.AddInfrastructure(Configuration);
 
 
-			services.AddControllers();
+			services.AddControllers().AddNewtonsoftJson(options =>
+			{
+				// Use the default property (Pascal) casing
+				//options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+
+				// Configure a custom converter
+				//options.SerializerSettings.Converters.Add(new MyCustomJsonConverter());
+			});
 			services.AddSwaggerCustom(apiAuthOptions);
 
 		}

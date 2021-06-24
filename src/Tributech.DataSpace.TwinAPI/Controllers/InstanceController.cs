@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 
@@ -12,41 +14,52 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	[ApiController]
 	public class InstanceController : ControllerBase {
 		private readonly ILogger<InstanceController> _logger;
+		private readonly ITwinRepository _twinRepository;
 
-		public InstanceController(ILogger<InstanceController> logger) {
+		public InstanceController(ILogger<InstanceController> logger, ITwinRepository twinRepository) {
 			_logger = logger;
+			_twinRepository = twinRepository;
 		}
 
 		[HttpGet]
-		public IEnumerable<BaseDigitalTwin> GetAllTwins() {
-			return new BaseDigitalTwin[] {
-			new BaseDigitalTwin() {
-					Id = new Guid(),
-					ETag = "tetet",
-					Properties = new Dictionary<string, JsonElement> (),
-					Metadata = new DigitalTwinMetadata() {
-						ModelId = "dtmi:io:tributech:test;1"
-					}
-				}
-			};
+		public Task<PaginatedResponse<DigitalTwin>> GetAllTwins() {
+			return _twinRepository.GetTwinsPaginated(0, 100);
 		}
 
 		[HttpGet("{dtid}")]
-		public BaseDigitalTwin GetTwin(Guid dtid) {
-			return null;
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetTwin(Guid dtid) {
+			var twin = await _twinRepository.GetTwin(dtid);
+
+			return Content(twin.GetExpanded(), "application/json");
 		}
 
 		[HttpPost]
-		public BaseDigitalTwin AddTwin([FromBody] BaseDigitalTwin twin) {
-			return null;
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> AddTwin([FromBody] DigitalTwin twin) {
+			var _twin = await _twinRepository.CreateTwinAsync(twin);
+			return Content(_twin.GetExpanded(), "application/json");
+
 		}
 
 		[HttpPut("{dtid}")]
-		public void UpsertTwin(Guid dtid, [FromBody] BaseDigitalTwin twin) {
+				[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
+			var _twin = await _twinRepository.UpsertTwinAsync(twin);
+			return Content(_twin.GetExpanded(), "application/json");
+
 		}
 
 		[HttpDelete("{dtid}")]
-		public void Delete(Guid dtid) {
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> Delete(Guid dtid) {
+			var twin = await _twinRepository.DeleteTwinAsync(dtid);
+			return Content(twin.GetExpanded(), "application/json");
+
 		}
 	}
 }

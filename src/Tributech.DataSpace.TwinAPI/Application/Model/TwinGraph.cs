@@ -1,19 +1,19 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Tributech.DataSpace.TwinAPI.Application.Model {
 	public class TwinGraph {
-		[JsonPropertyName("digitalTwinsFileInfo")]
+		[JsonProperty("digitalTwinsFileInfo")]
 		public TwinGraphFileInfo FileInfo { get; set; }
 
-		[JsonPropertyName("digitalTwins")]
-		public BaseDigitalTwin[] DigitalTwins { get; set; }
+		[JsonProperty("digitalTwins")]
+		public DigitalTwin[] DigitalTwins { get; set; }
 
-		[JsonPropertyName("relationships")]
-		public BasicRelationship[] Relationships { get; set; }
+		[JsonProperty("relationships")]
+		public Relationship[] Relationships { get; set; }
 	}
 
 	public class TwinGraphFileInfo {
-		[JsonPropertyName("fileVersion")]
+		[JsonProperty("fileVersion")]
 		public string FileVersion { get; set; }
 
 	}

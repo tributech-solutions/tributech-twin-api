@@ -31,7 +31,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 					.WithParam("id", relationship.Id)
 				 .Return((r) => r.As<Relationship>())
 				 .ResultsAsync;
-
+			 
 			//var mappedResults = MapToDigitalTwin(results);
 			return results.FirstOrDefault();
 		}
@@ -69,7 +69,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 		public async Task<DigitalTwin> GetTwin(Guid twinId) {
 			var results = await _client.Cypher
 				.Match("(twin:Twin)")
-				.Where((DigitalTwin twin) => twin.Id == twinId)
+				.Where((DigitalTwinNode twin) => twin.Id == twinId)
 				.Return((twin) => twin.As<DigitalTwinNode>())
 				.ResultsAsync;
 			var mappedResults = MapToDigitalTwin(results);
@@ -98,7 +98,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			return mappedResults.FirstOrDefault();
 		}
 
-		private DigitalTwin MapToDigitalTwin(DigitalTwinNode item) {
+		public static DigitalTwin MapToDigitalTwin(DigitalTwinNode item) {
 			var twin = new DigitalTwin() {
 				Id = item.Id,
 				ETag = item.ETag,
@@ -111,7 +111,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			return twin;
 		}
 
-		private IEnumerable<DigitalTwin> MapToDigitalTwin(IEnumerable<DigitalTwinNode> items) {
+		public static IEnumerable<DigitalTwin> MapToDigitalTwin(IEnumerable<DigitalTwinNode> items) {
 			return items.Select((item) => MapToDigitalTwin(item));
 		}
 	}

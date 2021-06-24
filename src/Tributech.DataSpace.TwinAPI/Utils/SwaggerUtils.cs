@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Tributech.DataSpace.Common.Auth.ApiAuth;
+using Tributech.DataSpace.TwinAPI.Extensions;
+using Tributech.DataSpace.TwinAPI.Options;
 
 namespace Tributech.DataSpace.TwinAPI.Utils {
 	public static class SwaggerUtils {
@@ -55,6 +56,7 @@ namespace Tributech.DataSpace.TwinAPI.Utils {
 					apiAuthOptions.Scopes
 				}});
 			});
+			services.AddSwaggerGenNewtonsoftSupport();
 
 		}
 
