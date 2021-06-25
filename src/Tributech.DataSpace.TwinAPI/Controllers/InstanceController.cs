@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Tributech.DataSpace.TwinAPI.Model;
+using Tributech.DataSpace.TwinAPI.Application.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 
@@ -17,10 +18,10 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		[HttpGet]
-		public IEnumerable<BaseDigitalTwin> Get() {
+		public IEnumerable<BaseDigitalTwin> GetAllTwins() {
 			return new BaseDigitalTwin[] {
 			new BaseDigitalTwin() {
-					Id = "tets",
+					Id = new Guid(),
 					ETag = "tetet",
 					Properties = new Dictionary<string, JsonElement> (),
 					Metadata = new DigitalTwinMetadata() {
@@ -30,30 +31,22 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 			};
 		}
 
-		// GET api/<InstanceController>/5
 		[HttpGet("{dtid}")]
-		public string Get(int dtid) {
-			return "value";
+		public BaseDigitalTwin GetTwin(Guid dtid) {
+			return null;
 		}
 
-		// POST api/<InstanceController>
 		[HttpPost]
-		public void Post([FromBody] BaseDigitalTwin twin) {
-			string dictionaryString = "{";
-			foreach (KeyValuePair<string, JsonElement> keyValues in twin?.Properties) {
-				dictionaryString += keyValues.Key + " : " + keyValues.Value.ToString() + ", ";
-			}
-			_logger.LogWarning(dictionaryString.TrimEnd(',', ' ') + "}");
+		public BaseDigitalTwin AddTwin([FromBody] BaseDigitalTwin twin) {
+			return null;
 		}
 
-		// PUT api/<InstanceController>/5
 		[HttpPut("{dtid}")]
-		public void Put(int dtid, [FromBody] BaseDigitalTwin twin) {
+		public void UpsertTwin(Guid dtid, [FromBody] BaseDigitalTwin twin) {
 		}
 
-		// DELETE api/<InstanceController>/5
 		[HttpDelete("{dtid}")]
-		public void Delete(int dtid) {
+		public void Delete(Guid dtid) {
 		}
 	}
 }
