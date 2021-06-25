@@ -2,8 +2,6 @@
 
 namespace Tributech.DataSpace.TwinAPI.Application.Model {
 	public class TwinGraph {
-		[JsonProperty("digitalTwinsFileInfo")]
-		public TwinGraphFileInfo FileInfo { get; set; }
 
 		[JsonProperty("digitalTwins")]
 		public DigitalTwin[] DigitalTwins { get; set; }
@@ -15,6 +13,15 @@ namespace Tributech.DataSpace.TwinAPI.Application.Model {
 	public class TwinGraphFileInfo {
 		[JsonProperty("fileVersion")]
 		public string FileVersion { get; set; }
+
+	}
+
+	public class TwinGraphFile {
+		[JsonProperty("digitalTwinsFileInfo")]
+		public TwinGraphFileInfo FileInfo { get; set; }
+
+		[JsonProperty("digitalTwinsGraph")]
+		public TwinGraph Graph { get; set; }
 
 	}
 }

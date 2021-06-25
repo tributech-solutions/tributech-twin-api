@@ -25,7 +25,6 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				 .Where((DigitalTwinNode sourceTwin) => sourceTwin.Id == relationship.SourceId)
 				 .AndWhere((DigitalTwinNode targetTwin) => targetTwin.Id == relationship.TargetId)
 				 .Merge($"(sourceTwin)-[r:{relationship.Name} {{ Id: $id }}]->(targetTwin)")
-				 .OnCreate()
 					.Set("r = $rel")
 					.WithParam("rel", relationship.GetFlat())
 					.WithParam("id", relationship.Id)
@@ -39,7 +38,6 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 		public async Task<DigitalTwin> CreateTwinAsync(DigitalTwin twin) {
 			var results = await _client.Cypher
 				.Merge("(twin:Twin {Id: $id})")
-				.OnCreate()
 				.Set("twin = $twin")
 				.WithParam("twin", twin.GetFlat())
 				.WithParam("id", twin.Id)
