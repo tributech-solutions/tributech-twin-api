@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  twin-api:
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - "5120:80"
+    networks:
+      - data-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+
+networks:
+  data-net:

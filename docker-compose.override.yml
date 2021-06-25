@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  twin-api:
+    build:
+      context: .
+      dockerfile: src/Tributech.DataSpace.TwinAPI/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5120:80"
+    networks:
+      - data-net
+
+networks:
+  data-net:

@@ -1,0 +1,5 @@
+version: '3.4'
+
+services:
+  twin-api:
+    image: ${DOCKER_REGISTRY-tributech.azurecr.io/}twin-api:${TAG:-latest}

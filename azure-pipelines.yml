@@ -1,0 +1,94 @@
+# Azure Build Pipeline
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - '*'
+    - refs/tags/*
+    exclude:
+    #  do not trigger for master (use git tag instead, see https://tributech.atlassian.net/wiki/spaces/TM/pages/99614725/Branches+Build-Pipelines+Tags#Issue-with-merge%2Fbuild-for-master-branch)
+    - master 
+  paths:
+    # do not trigger build for doc update
+    exclude:
+    - README.md
+    - doc/*
+
+pool:
+  name: dev-dsk-agentpool
+
+variables:
+  # ACR must be configured as Service connection with this name under the Project settings
+  dockerRegistry: 'tributech.azurecr.io' 
+  # add docker image tags for builds triggered from develop branch
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    addImageTags: |
+      beta
+  # add docker image tags for builds triggered for tag branch (we assume that we only tag on master)
+  # (used instead of trigger for master branch: see https://tributech.atlassian.net/wiki/spaces/TM/pages/99614725/Branches+Build-Pipelines+Tags#Issue-with-merge%2Fbuild-for-master-branch)
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags') }}:
+    addImageTags: |
+      beta
+      stable
+      latest
+      $(RELEASE_VERSION)
+  # add docker image tags for builds triggered from release branch
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
+    addImageTags: |
+      beta
+      $(RELEASE_VERSION)
+
+jobs:
+- job: BuildAndPublish
+  steps:
+  # set version (if triggered from release branch or tag)
+  - script: |
+      VERSION=$(echo "$(Build.SourceBranch)" | grep -o '[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?')
+      echo "##vso[task.setvariable variable=RELEASE_VERSION;]$VERSION"
+    displayName: 'Parse and set release version'
+    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release'), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
+  # build docker images
+  - task: DockerCompose@0
+    displayName: 'Build images'
+    inputs:
+      containerregistrytype: 'Container Registry'
+      dockerRegistryEndpoint: $(dockerRegistry)
+      additionalDockerComposeFiles: 'docker-compose.ci.build.yml'
+      dockerComposeFileArgs: |
+        DOCKER_REGISTRY=
+        TAG=$(Build.SourceVersion)
+        FEED_ACCESSTOKEN=$(System.AccessToken)
+      action: 'Build services'
+      additionalImageTags: |
+        alpha
+        ${{ variables.addImageTags }}
+      requireAdditionalDockerComposeFiles: true
+  # push docker images
+  - task: DockerCompose@0
+    displayName: 'Push images'
+    inputs:
+      containerregistrytype: 'Container Registry'
+      dockerRegistryEndpoint: $(dockerRegistry)
+      additionalDockerComposeFiles: 'docker-compose.ci.build.yml'
+      dockerComposeFileArgs: |
+        DOCKER_REGISTRY=
+        TAG=$(Build.SourceVersion)
+      action: 'Push services'
+      additionalImageTags: |
+        alpha
+        ${{ variables.addImageTags }}
+      requireAdditionalDockerComposeFiles: true
+  # prepare build artifacts
+  - script: |
+      cp docker-compose.yml $(Build.ArtifactStagingDirectory)/docker-compose.yml
+      cp docker-compose.run.yml  $(Build.ArtifactStagingDirectory)/docker-compose.override.yml
+    workingDirectory: '$(Build.SourcesDirectory)'
+    failOnStderr: true
+    displayName: 'Prepare artifacts'
+  # publish build artifacts
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish artifacts'
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifact: '$(Build.SourceVersion)'
