@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
@@ -15,34 +14,22 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	public class GraphController : ControllerBase {
 		private readonly ILogger<GraphController> _logger;
 		private readonly ITwinRepository _twinRepository;
+		private readonly IRelationshipRepository _relRepository;
 
-		public GraphController(ILogger<GraphController> logger, ITwinRepository twinRepository) {
+		public GraphController(ILogger<GraphController> logger, ITwinRepository twinRepository, IRelationshipRepository relRepository) {
 			_logger = logger;
 			_twinRepository = twinRepository;
-		}
-
-		[HttpGet]
-		public IEnumerable<TwinGraph> GetAllSubgraphs() {
-			return null;
-		}
-
-		[HttpGet("{dtid}")]
-		public TwinGraph Get(Guid rootTwinDtId) {
-			return null;
+			_relRepository = relRepository;
 		}
 
 		[HttpPut, HttpPost]
 		public ActionResult UpsertTwinGraph([FromBody] TwinGraphFile graph) {
 			var _twins = graph.Graph.DigitalTwins;
 			var _relationships = graph.Graph.Relationships;
-			var t = _twins.Select(async twin => await _twinRepository.CreateTwinAsync(twin));
-			var r = _relationships.Select(async rel => await _twinRepository.CreateRelationshipAsync(rel));
+			var t = _twins.Select(async twin => await _twinRepository.CreateTwinAsync(twin)).ToArray();
+			var r = _relationships.Select(async rel => await _relRepository.CreateRelationshipAsync(rel)).ToArray();
 
 			return Ok(new { Twins = t.Count(), Relationships = r.Count() });
-		}
-
-		[HttpDelete("{dtid}")]
-		public void DeleteTwinGraph(Guid rootTwinDtId) {
 		}
 	}
 }

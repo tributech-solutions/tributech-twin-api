@@ -12,29 +12,31 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	[ApiController]
 	public class RelationshipController : ControllerBase {
 		private readonly ILogger<RelationshipController> _logger;
-		private readonly ITwinRepository _twinRepository;
+		private readonly IRelationshipRepository _relRepository;
 
-		public RelationshipController(ILogger<RelationshipController> logger, ITwinRepository twinRepository) {
+		public RelationshipController(ILogger<RelationshipController> logger, IRelationshipRepository relRepository) {
 			_logger = logger;
-			_twinRepository = twinRepository;
+			_relRepository = relRepository;
 		}
 
 		[HttpGet("{relationshipId}")]
-		public DigitalTwin GetRelationship(Guid relationshipId) {
-			return null;
+		public Task<Relationship> GetRelationship(Guid relationshipId) {
+			return _relRepository.GetRelationshipAsync(relationshipId);
 		}
 
 		[HttpPost]
 		public Task<Relationship> CreateRelationship([FromBody] Relationship relationship) {
-			return _twinRepository.CreateRelationshipAsync(relationship);
+			return _relRepository.CreateRelationshipAsync(relationship);
 		}
 
-		[HttpPut("{relationshipId}")]
-		public void UpsertRelationship(Guid dtid, [FromBody] Relationship relationship) {
+		[HttpPut]
+		public Task<Relationship> UpsertRelationship([FromBody] Relationship relationship) {
+			return _relRepository.UpsertRelationshipAsync(relationship);
 		}
 
 		[HttpDelete("{relationshipId}")]
-		public void Delete(Guid relationshipId) {
+		public Task<Relationship> Delete(Guid relationshipId) {
+			return _relRepository.DeleteRelationshipAsync(relationshipId);
 		}
 	}
 }
