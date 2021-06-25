@@ -1,5 +1,3 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
 LABEL vendor="Tributech.io Solutions"
 WORKDIR /app
@@ -7,12 +5,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 WORKDIR /src
-RUN curl -L https://raw.githubusercontent.com/Microsoft/artifacts-credprovider/master/helpers/installcredprovider.sh  | sh
-COPY ["src/Tributech.DataSpace.TwinAPI/Tributech.DataSpace.Twin-API.csproj", "src/Tributech.DataSpace.TwinAPI/"]
-COPY ./nuget.config .
-ARG FEED_ACCESSTOKEN
-ENV VSS_NUGET_EXTERNAL_FEED_ENDPOINTS \
-	"{\"endpointCredentials\": [{\"endpoint\":\"https://pkgs.dev.azure.com/tributechsolutions/Tributech%20DataSpace%20Kit/_packaging/tributech-dsk/nuget/v3/index.json\", \"username\":\"docker\", \"password\":\"${FEED_ACCESSTOKEN}\"}]}"
+COPY ["src/Tributech.DataSpace.TwinAPI/Tributech.DataSpace.TwinAPI.csproj", "src/Tributech.DataSpace.TwinAPI/"]
 RUN dotnet restore "src/Tributech.DataSpace.TwinAPI/Tributech.DataSpace.TwinAPI.csproj"
 COPY . .
 WORKDIR "/src/src/Tributech.DataSpace.TwinAPI"

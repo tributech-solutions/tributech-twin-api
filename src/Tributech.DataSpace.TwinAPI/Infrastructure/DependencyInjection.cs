@@ -36,6 +36,8 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
 
 
 			services.AddScoped<ITwinRepository, TwinRepository>();
+			services.AddScoped<IRelationshipRepository, RelationshipRepository>();
+
 
 			services
 				.AddSingleton<ISchemaCache, InMemorySchemaCache>()

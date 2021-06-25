@@ -4,11 +4,11 @@
 namespace Tributech.DataSpace.TwinAPI.Model {
 	public class PaginatedResponse<T> where T : class {
 		public PaginatedResponse(int totalElements, IEnumerable<T> content) {
-			TotalELements = totalElements;
+			TotalElements = totalElements;
 			Content = content;
 		}
 
-		public int TotalELements { get; }
+		public int TotalElements { get; }
 		public IEnumerable<T> Content { get; }
 
 	}
