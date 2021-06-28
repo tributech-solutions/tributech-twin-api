@@ -8,8 +8,6 @@ using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Options;
 using Tributech.DataSpace.TwinAPI.Utils;
-using Tributech.DataSpace.TwinAPI.Options;
-using Tributech.DataSpace.TwinAPI.Extensions;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {

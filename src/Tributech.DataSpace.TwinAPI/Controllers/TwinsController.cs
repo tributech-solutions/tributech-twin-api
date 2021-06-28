@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
@@ -22,16 +22,19 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		[HttpGet]
-		public Task<PaginatedResponse<DigitalTwin>> GetAllTwins() {
-			return _twinRepository.GetTwinsPaginatedAsync(0, 100);
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<DigitalTwin>))]
+		public async Task<IActionResult> GetAllTwins([FromQuery(Name = "pageNumber")] uint pageNumber = 1, [FromQuery(Name = "pageSize")] uint pageSize = 100) {
+			var results = await _twinRepository.GetTwinsPaginatedAsync(pageNumber, pageSize);
+			return Ok(new PaginatedResponse<object>(results.TotalElements, results.Content.Select(t => t.ToExpandoObject())));
 		}
 
 
 		[HttpGet("/model/{dtmi}")]
-		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<DigitalTwin>))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public Task<PaginatedResponse<DigitalTwin>> GetTwinsByModel(string dtmi) {
-			return _twinRepository.GetTwinsByModelPaginatedAsync(dtmi, 0, 100);
+		public async Task<IActionResult> GetTwinsByModel(string dtmi, [FromQuery(Name = "pageNumber")] uint pageNumber = 1, [FromQuery(Name = "pageSize")] uint pageSize = 100) {
+			var paginated = await _twinRepository.GetTwinsByModelPaginatedAsync(dtmi, pageNumber, pageSize);
+			return Ok(new PaginatedResponse<object>(paginated.TotalElements, paginated.Content.Select(t => t.ToExpandoObject())));
 		}
 
 		[HttpGet("{dtid}")]
@@ -39,8 +42,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetTwin(Guid dtid) {
 			var twin = await _twinRepository.GetTwinAsync(dtid);
-
-			return Content(twin.GetExpanded(), "application/json");
+			return Ok(twin.ToExpandoObject());
 		}
 
 		[HttpPost]
@@ -48,17 +50,16 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> AddTwin([FromBody] DigitalTwin twin) {
 			var _twin = await _twinRepository.CreateTwinAsync(twin);
-			return Content(_twin.GetExpanded(), "application/json");
+			return Ok(_twin.ToExpandoObject());
 
 		}
 
 		[HttpPut("{dtid}")]
-				[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
 			var _twin = await _twinRepository.UpsertTwinAsync(twin);
-			return Content(_twin.GetExpanded(), "application/json");
-
+			return Ok(_twin.ToExpandoObject());
 		}
 
 		[HttpDelete("{dtid}")]
@@ -66,8 +67,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Delete(Guid dtid) {
 			var twin = await _twinRepository.DeleteTwinAsync(dtid);
-			return Content(twin.GetExpanded(), "application/json");
-
+			return Ok(twin.ToExpandoObject());
 		}
 	}
 }

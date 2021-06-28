@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
+using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 
@@ -13,18 +12,22 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	[ApiController]
 	public class QueryController : ControllerBase {
 		private readonly ILogger<QueryController> _logger;
-		private readonly ITwinRepository _twinRepository;
+		private readonly IQueryRepository _queryRepository;
 
-		public QueryController(ILogger<QueryController> logger, ITwinRepository twinRepository) {
+		public QueryController(ILogger<QueryController> logger, IQueryRepository queryRepository) {
 			_logger = logger;
-			_twinRepository = twinRepository;
+			_queryRepository = queryRepository;
 		}
 
-		[HttpGet("{dtmi}")]
+		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetSubgraphByQuery([FromBody] TwinInstanceMetaQuery query) {
-			return null;
+		public async Task<IActionResult> GetSubgraphByQuery([FromBody] TwinGraphQuery query) {
+			var res = await _queryRepository.GetSubgraph(query);
+			return Ok(new TwinGraph<dynamic, dynamic>() {
+				DigitalTwins = res.DigitalTwins.ToExpandoObject(),
+				Relationships = res.Relationships.ToExpandoObject()
+			});
 		}
 	}
 }

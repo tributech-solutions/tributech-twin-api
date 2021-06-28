@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 	public class RelationshipRepository : IRelationshipRepository {
@@ -24,13 +23,13 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				 .AndWhere((DigitalTwinNode targetTwin) => targetTwin.Id == relationship.TargetId)
 				 .Merge($"(sourceTwin)-[r:{relationship.Name} {{ Id: $id }}]->(targetTwin)")
 					.Set("r = $rel")
-					.WithParam("rel", relationship.GetFlat())
+					.WithParam("rel", relationship.ToDotNotationDictionary())
 					.WithParam("id", relationship.Id)
-				 .Return((r) => r.As<Relationship>())
+				 .Return((r) => r.As<RelationshipNode>())
 				 .ResultsAsync;
 
-			//var mappedResults = MapToDigitalTwin(results);
-			return results.FirstOrDefault();
+			var mappedResults = results.MapToRelationship();
+			return mappedResults.FirstOrDefault();
 		}
 
 		public async Task<Relationship> DeleteRelationshipAsync(Guid relationshipId) {
@@ -38,37 +37,38 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			 .Match("(:Twin)--[rel {Id: $id}]--(:Twin)")
 			 .WithParam("id", relationshipId)
 			 .Delete("rel")
-			 .Return((rel) => rel.As<Relationship>())
+			 .Return((rel) => rel.As<RelationshipNode>())
 			 .ResultsAsync;
 
-			return results.FirstOrDefault();
+			var mappedResults = results.MapToRelationship();
+			return mappedResults.FirstOrDefault();
 		}
 
 		public async Task<Relationship> GetRelationshipAsync(Guid relationshipId) {
 			var results = await _client.Cypher
-		 .Match("(:Twin)-[r {{ Id: $id }}]-(:Twin)")
-		 .WithParam("id", relationshipId)
-		 .Return((r) => r.As<Relationship>())
-		 .ResultsAsync;
+			 .Match("(:Twin)-[r {{ Id: $id }}]-(:Twin)")
+			 .WithParam("id", relationshipId)
+			 .Return((r) => r.As<RelationshipNode>())
+			 .ResultsAsync;
 
-			//var mappedResults = MapToDigitalTwin(results);
-			return results.FirstOrDefault();
+			var mappedResults = results.MapToRelationship();
+			return mappedResults.FirstOrDefault();
 		}
 
 		public async Task<Relationship> UpsertRelationshipAsync(Relationship relationship) {
 			var results = await _client.Cypher
-		 .Match("(sourceTwin:Twin)", "(targetTwin:Twin)")
-		 .Where((DigitalTwinNode sourceTwin) => sourceTwin.Id == relationship.SourceId)
-		 .AndWhere((DigitalTwinNode targetTwin) => targetTwin.Id == relationship.TargetId)
-		 .Merge($"(sourceTwin)-[r:{relationship.Name} {{ Id: $id }}]->(targetTwin)")
-			.Set("r = $rel")
-			.WithParam("rel", relationship.GetFlat())
-			.WithParam("id", relationship.Id)
-		 .Return((r) => r.As<Relationship>())
-		 .ResultsAsync;
+			 .Match("(sourceTwin:Twin)", "(targetTwin:Twin)")
+			 .Where((DigitalTwinNode sourceTwin) => sourceTwin.Id == relationship.SourceId)
+			 .AndWhere((DigitalTwinNode targetTwin) => targetTwin.Id == relationship.TargetId)
+			 .Merge($"(sourceTwin)-[r:{relationship.Name} {{ Id: $id }}]->(targetTwin)")
+				.Set("r = $rel")
+				.WithParam("rel", relationship.ToDotNotationDictionary())
+				.WithParam("id", relationship.Id)
+			 .Return((r) => r.As<RelationshipNode>())
+			 .ResultsAsync;
 
-			//var mappedResults = MapToDigitalTwin(results);
-			return results.FirstOrDefault();
+			var mappedResults = results.MapToRelationship();
+			return mappedResults.FirstOrDefault();
 		}
 	}
 }

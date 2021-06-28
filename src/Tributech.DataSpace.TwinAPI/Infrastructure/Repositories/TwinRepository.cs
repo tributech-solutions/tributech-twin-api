@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Neo4jClient;
-using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
-using Tributech.DataSpace.TwinAPI.Application.Model;
 using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
@@ -24,12 +21,12 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			var results = await _client.Cypher
 				.Merge("(twin:Twin {Id: $id})")
 				.Set("twin = $twin")
-				.WithParam("twin", twin.GetFlat())
+				.WithParam("twin", twin.ToDotNotationDictionary())
 				.WithParam("id", twin.Id)
 				.Return((twin) => twin.As<DigitalTwinNode>())
 				.ResultsAsync;
 
-			var mappedResults = MapToDigitalTwin(results);
+			var mappedResults = results.MapToDigitalTwin();
 			return mappedResults.FirstOrDefault();
 		}
 
@@ -41,7 +38,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			 .Return((twin) => twin.As<DigitalTwinNode>())
 			 .ResultsAsync;
 
-			var mappedResults = MapToDigitalTwin(results);
+			var mappedResults = results.MapToDigitalTwin();
 			return mappedResults.FirstOrDefault();
 		}
 
@@ -51,7 +48,8 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				.Where((DigitalTwinNode twin) => twin.Id == twinId)
 				.Return((twin) => twin.As<DigitalTwinNode>())
 				.ResultsAsync;
-			var mappedResults = MapToDigitalTwin(results);
+
+			var mappedResults = results.MapToDigitalTwin();
 			return mappedResults.FirstOrDefault();
 		}
 
@@ -60,7 +58,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				.Match("(twin:Twin)")
 				.Return((twin) => twin.As<DigitalTwinNode>())
 				.ResultsAsync;
-			var mappedResults = MapToDigitalTwin(results);
+			var mappedResults = results.MapToDigitalTwin();
 			return new PaginatedResponse<DigitalTwin>(mappedResults.Count(), mappedResults);
 		}
 
@@ -69,11 +67,11 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				.Merge("(twin:Twin {Id: $id})")
 				.OnMatch()
 				.Set("twin = $twin")
-				.WithParam("twin", twin.GetFlat())
+				.WithParam("twin", twin.ToDotNotationDictionary())
 				.WithParam("id", twin.Id)
 				.Return((twin) => twin.As<DigitalTwinNode>())
 				.ResultsAsync;
-			var mappedResults = MapToDigitalTwin(results);
+			var mappedResults = results.MapToDigitalTwin();
 			return mappedResults.FirstOrDefault();
 		}
 
@@ -83,25 +81,9 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				.WithParam("id", dtmi)
 				.Return((twin) => twin.As<DigitalTwinNode>())
 				.ResultsAsync;
-			var mappedResults = MapToDigitalTwin(results);
+			var mappedResults = results.MapToDigitalTwin();
 			return new PaginatedResponse<DigitalTwin>(mappedResults.Count(), mappedResults);
 		}
 
-		public static DigitalTwin MapToDigitalTwin(DigitalTwinNode item) {
-			var twin = new DigitalTwin() {
-				Id = item.Id,
-				ETag = item.ETag,
-				Metadata = new DigitalTwinMetadata() {
-					ModelId = item?.ModelId
-				},
-				Properties = item.Properties
-			};
-
-			return twin;
-		}
-
-		public static IEnumerable<DigitalTwin> MapToDigitalTwin(IEnumerable<DigitalTwinNode> items) {
-			return items.Select((item) => MapToDigitalTwin(item));
-		}
 	}
 }

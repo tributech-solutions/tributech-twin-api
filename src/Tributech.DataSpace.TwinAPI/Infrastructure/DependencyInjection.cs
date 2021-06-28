@@ -8,10 +8,11 @@ using Microsoft.Extensions.Options;
 using System;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Newtonsoft.Json;
-using Tributech.DataSpace.TwinAPI.Application.Model;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
-using Relationship = Tributech.DataSpace.TwinAPI.Application.Model.Relationship;
+using Tributech.DataSpace.TwinAPI.Model;
+using Tributech.DataSpace.TwinAPI.Infrastructure.SchemaCache;
+using Relationship = Tributech.DataSpace.TwinAPI.Model.Relationship;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure
 {
@@ -37,7 +38,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
 
 			services.AddScoped<ITwinRepository, TwinRepository>();
 			services.AddScoped<IRelationshipRepository, RelationshipRepository>();
-
+			services.AddScoped<IQueryRepository, QueryRepository>();
 
 			services
 				.AddSingleton<ISchemaCache, InMemorySchemaCache>()

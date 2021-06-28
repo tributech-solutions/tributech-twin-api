@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Model;
 
-namespace Tributech.DataSpace.TwinAPI.Application.Infrastructure {
+namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 	public interface IRelationshipRepository {
 		public Task<Relationship> CreateRelationshipAsync(Relationship relationship);
 		public Task<Relationship> UpsertRelationshipAsync(Relationship relationship);
