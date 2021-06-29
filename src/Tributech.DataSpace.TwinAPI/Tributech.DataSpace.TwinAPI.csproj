@@ -18,7 +18,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Infrastructure\Converters\" />
 	  <Folder Include="Options\" />
 	</ItemGroup>
 
