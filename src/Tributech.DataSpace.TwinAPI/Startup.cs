@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,31 +21,19 @@ namespace Tributech.DataSpace.TwinAPI {
 		public void ConfigureServices(IServiceCollection services) {
 			services.AddOptions(Configuration, out ApiAuthOptions apiAuthOptions);
 
-			//var configExample = Configuration.GetSection(nameof(ClassName));
-			//services.AddOptions<ClassName>().Bind(configExample));
-
-			//services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-			//	.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
-			//		options.Authority = apiAuthOptions.Authority;
-			//		options.Audience = apiAuthOptions.Audience;
-			//	});
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
+					options.Authority = apiAuthOptions.Authority;
+					options.Audience = apiAuthOptions.Audience;
+				});
 
 			services.AddHealthChecks();
 			services.AddRouting(options => options.LowercaseUrls = true);
 
 			services.AddInfrastructure(Configuration);
 
-
-			services.AddControllers().AddNewtonsoftJson(options =>
-			{
-				// Use the default property (Pascal) casing
-				//options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-
-				// Configure a custom converter
-				//options.SerializerSettings.Converters.Add(new MyCustomJsonConverter());
-			});
+			services.AddControllers().AddNewtonsoftJson();
 			services.AddSwaggerCustom(apiAuthOptions);
-
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<ApiAuthOptions> apiAuthOptionsAccessor) {
@@ -54,8 +43,8 @@ namespace Tributech.DataSpace.TwinAPI {
 		
 			app.UseRouting();
 
-			//app.UseAuthentication();
-			//app.UseAuthorization();
+			app.UseAuthentication();
+			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
