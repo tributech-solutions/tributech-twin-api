@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
-using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Model;
 
-namespace Tributech.DataSpace.TwinAPI.Infrastructure
+namespace Tributech.DataSpace.TwinAPI.Infrastructure.SchemaCache
 {
     public class InMemorySchemaCache: ISchemaCache
     {

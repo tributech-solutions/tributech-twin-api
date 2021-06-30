@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Tributech.DataSpace.TwinAPI.Application.Model;
+using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
+using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 
@@ -12,27 +13,43 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	[ApiController]
 	public class RelationshipController : ControllerBase {
 		private readonly ILogger<RelationshipController> _logger;
+		private readonly IRelationshipRepository _relRepository;
 
-		public RelationshipController(ILogger<RelationshipController> logger) {
+		public RelationshipController(ILogger<RelationshipController> logger, IRelationshipRepository relRepository) {
 			_logger = logger;
+			_relRepository = relRepository;
 		}
 
 		[HttpGet("{relationshipId}")]
-		public BaseDigitalTwin GetRelationship(Guid relationshipId) {
-			return null;
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetRelationship(Guid relationshipId) {
+			var res = await _relRepository.GetRelationshipAsync(relationshipId);
+			return Ok(res.ToExpandoObject());
 		}
 
 		[HttpPost]
-		public BaseDigitalTwin CreateRelationship([FromBody] BasicRelationship relationship) {
-			return null;
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> CreateRelationship([FromBody] Relationship relationship) {
+			var res = await _relRepository.CreateRelationshipAsync(relationship);
+			return Ok(res.ToExpandoObject());
 		}
 
-		[HttpPut("{relationshipId}")]
-		public void UpsertRelationship(Guid dtid, [FromBody] BasicRelationship relationship) {
+		[HttpPut]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> UpsertRelationship([FromBody] Relationship relationship) {
+			var res = await _relRepository.UpsertRelationshipAsync(relationship);
+			return Ok(res.ToExpandoObject());
 		}
 
 		[HttpDelete("{relationshipId}")]
-		public void Delete(Guid relationshipId) {
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> Delete(Guid relationshipId) {
+			var res = await _relRepository.DeleteRelationshipAsync(relationshipId);
+			return Ok(res.ToExpandoObject());
 		}
 	}
 }

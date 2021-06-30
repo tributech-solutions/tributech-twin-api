@@ -56,6 +56,7 @@ namespace Tributech.DataSpace.TwinAPI.Utils {
 					apiAuthOptions.Scopes
 				}});
 			});
+			services.AddSwaggerGenNewtonsoftSupport();
 
 		}
 

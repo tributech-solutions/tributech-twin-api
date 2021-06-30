@@ -35,7 +35,14 @@ namespace Tributech.DataSpace.TwinAPI {
 			services.AddInfrastructure(Configuration);
 
 
-			services.AddControllers();
+			services.AddControllers().AddNewtonsoftJson(options =>
+			{
+				// Use the default property (Pascal) casing
+				//options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+
+				// Configure a custom converter
+				//options.SerializerSettings.Converters.Add(new MyCustomJsonConverter());
+			});
 			services.AddSwaggerCustom(apiAuthOptions);
 
 		}

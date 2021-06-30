@@ -14,6 +14,27 @@ services:
       options:
         max-size: "2m"
         max-file: "5"
-
+  neo4j:
+    restart: always
+    environment:
+      NEO4J_dbms.security.procedures.allowlist: apoc.*,algo.*
+      NEO4J_AUTH: neo4j/password
+      NEO4JLABS_PLUGINS: \[\"apoc\"\]
+    networks:
+      - data-net
+    volumes:
+      - neo4j:/data # named volume to avoid permission issue "data directory has wrong ownership"
+      - neo4j:/plugins
+    ports:
+      - "7474:7474"
+      - "7473:7473"
+      - "7687:7687"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
 networks:
   data-net:
+volumes:
+  neo4j:
