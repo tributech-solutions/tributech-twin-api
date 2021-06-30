@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Tributech.DataSpace.TwinAPI.Infrastructure.VocabularyAPI;
-using Tributech.DataSpace.TwinAPI.Application.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j;
 using Neo4jClient;
 using Microsoft.Extensions.Options;
@@ -13,6 +11,8 @@ using Newtonsoft.Json.Linq;
 using Tributech.DataSpace.TwinAPI.Model;
 using Tributech.DataSpace.TwinAPI.Infrastructure.SchemaCache;
 using Relationship = Tributech.DataSpace.TwinAPI.Model.Relationship;
+using Tributech.DataSpace.TwinAPI.Infrastructure.CatalogAPI;
+using Type = System.Type;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure
 {
@@ -20,7 +20,6 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) 
         {
-            services.AddOptions<VocabularyAPIOptions>().Bind(configuration.GetSection(nameof(VocabularyAPIOptions)));
 			services.AddOptions<Neo4jOptions>().Bind(configuration.GetSection(nameof(Neo4jOptions)));
 
 			services.AddScoped(typeof(IGraphClient), provider => {
@@ -40,13 +39,8 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
 			services.AddScoped<IRelationshipRepository, RelationshipRepository>();
 			services.AddScoped<IQueryRepository, QueryRepository>();
 
-			services
-				.AddSingleton<ISchemaCache, InMemorySchemaCache>()
-                .AddHttpContextAccessor()
-                .AddTransient<VocabularyAPIAuthHandler>();
-
-            services.AddHttpClient<IVocabularyService, VocabularyAPIClient>()
-                .AddHttpMessageHandler<VocabularyAPIAuthHandler>();
+			services.AddSingleton<ISchemaCache, InMemorySchemaCache>();
+			services.AddCatalogAPIClient(options => configuration.GetSection(nameof(CatalogAPIOptions)).Bind(options));
 
             return services;
         }
