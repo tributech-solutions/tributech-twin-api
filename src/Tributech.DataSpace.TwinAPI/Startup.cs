@@ -32,6 +32,7 @@ namespace Tributech.DataSpace.TwinAPI {
 
 			services.AddInfrastructure(Configuration);
 
+			// We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
 			services.AddControllers().AddNewtonsoftJson();
 			services.AddSwaggerCustom(apiAuthOptions);
 		}
@@ -48,6 +49,7 @@ namespace Tributech.DataSpace.TwinAPI {
 
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();
+				endpoints.MapHealthChecks("/health");
 			});
 
 			app.UseSwaggerCustom(apiAuthOptionsAccessor.Value);
