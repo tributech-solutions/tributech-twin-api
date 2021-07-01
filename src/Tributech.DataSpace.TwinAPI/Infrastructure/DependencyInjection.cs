@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 using Tributech.DataSpace.TwinAPI.Model;
-using Tributech.DataSpace.TwinAPI.Infrastructure.SchemaCache;
 using Relationship = Tributech.DataSpace.TwinAPI.Model.Relationship;
 using Tributech.DataSpace.TwinAPI.Infrastructure.CatalogAPI;
 using Type = System.Type;
@@ -38,8 +37,6 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
 			services.AddScoped<ITwinRepository, TwinRepository>();
 			services.AddScoped<IRelationshipRepository, RelationshipRepository>();
 			services.AddScoped<IQueryRepository, QueryRepository>();
-
-			services.AddSingleton<ISchemaCache, InMemorySchemaCache>();
 			services.AddCatalogAPIClient(options => configuration.GetSection(nameof(CatalogAPIOptions)).Bind(options));
 
             return services;
