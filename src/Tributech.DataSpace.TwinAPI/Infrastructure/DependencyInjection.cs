@@ -26,7 +26,6 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure
 				var client = new BoltGraphClient(new Uri(options.Value.Host), username: options.Value.User, password: options.Value.Password);
 				client.ConnectAsync().Wait();
 
-
 				client.JsonConverters.Add(new DigitalTwinConverter());
 				client.JsonConverters.Add(new RelationshipConverter());
 

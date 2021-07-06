@@ -9,6 +9,8 @@ using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Options;
 using Tributech.DataSpace.TwinAPI.Utils;
+using FluentValidation.AspNetCore;
+using Tributech.DataSpace.TwinAPI.Validators;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {
@@ -21,16 +23,16 @@ namespace Tributech.DataSpace.TwinAPI {
 		public void ConfigureServices(IServiceCollection services) {
 			services.AddOptions(Configuration, out ApiAuthOptions apiAuthOptions);
 
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
-					options.Authority = apiAuthOptions.Authority;
-					options.Audience = apiAuthOptions.Audience;
-				});
+			//services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+			//	.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
+			//		options.Authority = apiAuthOptions.Authority;
+			//		options.Audience = apiAuthOptions.Audience;
+			//	});
 
 			services.AddHealthChecks();
 			services.AddRouting(options => options.LowercaseUrls = true);
-
 			services.AddInfrastructure(Configuration);
+			services.AddValidators(Configuration);
 
 			// We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
 			services.AddControllers().AddNewtonsoftJson();
@@ -41,11 +43,11 @@ namespace Tributech.DataSpace.TwinAPI {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			}
-		
+
 			app.UseRouting();
 
-			app.UseAuthentication();
-			app.UseAuthorization();
+			//app.UseAuthentication();
+			//app.UseAuthorization();
 
 			app.UseEndpoints(endpoints => {
 				endpoints.MapControllers();

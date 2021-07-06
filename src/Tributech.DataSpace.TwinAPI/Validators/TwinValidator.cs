@@ -1,17 +1,25 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Validators;
-using Tributech.DataSpace.TwinAPI.Infrastructure.CatalogAPI;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using Tributech.DataSpace.TwinAPI.Model;
+using Tributech.Dsk.Api.Clients.CatalogApi;
 
 namespace Tributech.DataSpace.TwinAPI.Validators {
 	public class TwinValidator : AbstractValidator<DigitalTwin> {
 		private readonly CatalogAPIClient _catalogAPI;
-		public TwinValidator(CatalogAPIClient catalogAPI) {
+		private readonly ILogger<TwinValidator> _logger;
+
+		public TwinValidator(ILogger<TwinValidator> logger,
+							CatalogAPIClient catalogAPI) {
 			_catalogAPI = catalogAPI;
+			_logger = logger;
+
 			RuleFor(x => x.Metadata).NotNull().WithMessage("$metadata cant be empty");
 			RuleFor(x => x.Metadata.ModelId)
 				.NotEmpty()
@@ -22,14 +30,21 @@ namespace Tributech.DataSpace.TwinAPI.Validators {
 		}
 
 		private async Task ValidateAgainstSchema(DigitalTwin twin, CustomContext context, CancellationToken cancelationToken) {
-			SchemaValidationError validationResult = await _catalogAPI.ValidateAsync(twin.ToExpandoObject());
+			JSONSchema4 _schema = await _catalogAPI.ValidateSchemaAsync(twin.Metadata.ModelId);
 
-			if (validationResult.Success) {
+			JsonSchema schema = JsonSchema.Parse(JObject.FromObject(_schema).ToString());
+			JObject person = JObject.FromObject(twin.ToExpandoObject());
+
+			bool valid = person.IsValid(schema, out IList<string> errorMessages);
+
+			_logger.LogDebug(@"Validate incoming twin with Id {0}", twin.Id);
+
+			if (valid) {
 				return;
 			}
 
-			foreach(SchemaErrorObject error in validationResult.Errors) {
-				context.AddFailure(error.PropertyName, error.Message);
+			foreach(string error in errorMessages) {
+				context.AddFailure(error);
 			}
 		}
 	}
