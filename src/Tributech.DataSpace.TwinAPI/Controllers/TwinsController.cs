@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,16 +12,18 @@ using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 
-	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	[Route("[controller]")]
 	[ApiController]
 	public class TwinsController : ControllerBase {
 		private readonly ILogger<TwinsController> _logger;
 		private readonly ITwinRepository _twinRepository;
+		private readonly IValidator<DigitalTwin> _twinValidator;
 
-		public TwinsController(ILogger<TwinsController> logger, ITwinRepository twinRepository) {
+		public TwinsController(ILogger<TwinsController> logger, ITwinRepository twinRepository, IValidator<DigitalTwin> twinValidator) {
 			_logger = logger;
 			_twinRepository = twinRepository;
+			_twinValidator = twinValidator;
 		}
 
 		[HttpGet]
@@ -51,6 +54,12 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> AddTwin([FromBody] DigitalTwin twin) {
+			var result = await _twinValidator.ValidateAsync(twin);
+
+			if (!result.IsValid) {
+				return BadRequest(result.Errors);
+			}
+
 			var _twin = await _twinRepository.CreateTwinAsync(twin);
 			return Ok(_twin.ToExpandoObject());
 

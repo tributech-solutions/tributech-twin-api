@@ -47,4 +47,20 @@ namespace Tributech.DataSpace.TwinAPI.Options {
 		/// </summary>
 		public string ClientId { get; set; } = "";
 	}
+
+	/// <summary>
+	/// Options for authentication/authorization of clients to access an API.
+	/// </summary>
+	public class ClientAuthOptions : ApiAuthOptions {
+
+		/// <summary>
+		/// The endpoint of the API we want to access.
+		/// </summary>
+		public string ApiEndpoint { get; set; } = "";
+
+		/// <summary>
+		/// Secret to acquire a token for the <see cref="AuthOptionsBase.ClientId"/> (e.g. at client credentials flow).
+		/// </summary>
+		public string ClientSecret { get; set; } = "";
+	}
 }
