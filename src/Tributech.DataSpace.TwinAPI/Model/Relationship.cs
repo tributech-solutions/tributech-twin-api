@@ -64,7 +64,7 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 			var eo = new ExpandoObject();
 			var eoColl = (ICollection<KeyValuePair<string, object>>)eo;
 			IDictionary<string, object> dictionary = rel.Properties.UnflattenFromDotNotation();
-			dictionary.Add("$dtId", rel.Id.ToString());
+			dictionary.Add("$relationshipId", rel.Id.ToString());
 			dictionary.Add("$etag", rel.ETag);
 			dictionary.Add("$sourceId", rel.SourceId);
 			dictionary.Add("$targetId", rel.TargetId);
