@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -53,6 +54,28 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 
 			var mappedResults = results.MapToRelationship();
 			return mappedResults.FirstOrDefault();
+		}
+		
+		public async Task<IEnumerable<Relationship>> GetOutgoingRelationshipsAsync(Guid twinId) {
+			var results = await _client.Cypher
+				.Match("(:Twin)-[r { SourceId: $id }]-(:Twin)")
+				.WithParam("id", twinId)
+				.Return((r) => r.As<RelationshipNode>())
+				.ResultsAsync;
+
+			var mappedResults = results.MapToRelationship();
+			return mappedResults;
+		}
+		
+		public async Task<IEnumerable<Relationship>> GetIncomingRelationshipsAsync(Guid twinId) {
+			var results = await _client.Cypher
+				.Match("(:Twin)-[r { TargetId: $id }]-(:Twin)")
+				.WithParam("id", twinId)
+				.Return((r) => r.As<RelationshipNode>())
+				.ResultsAsync;
+
+			var mappedResults = results.MapToRelationship();
+			return mappedResults;
 		}
 
 		public async Task<Relationship> UpsertRelationshipAsync(Relationship relationship) {

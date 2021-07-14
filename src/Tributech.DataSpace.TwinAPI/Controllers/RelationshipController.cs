@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,22 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 			_relRepository = relRepository;
 		}
 
+		[HttpGet("/outgoing/{twinId}")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Relationship>))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetOutgoingRelationships(Guid twinId) {
+			var res = await _relRepository.GetOutgoingRelationshipsAsync(twinId);
+			return Ok(res.ToExpandoObject());
+		}
+		
+		[HttpGet("/incoming/{twinId}")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Relationship>))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetIncomingRelationships(Guid twinId) {
+			var res = await _relRepository.GetIncomingRelationshipsAsync(twinId);
+			return Ok(res.ToExpandoObject());
+		}
+		
 		[HttpGet("{relationshipId}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
