@@ -22,7 +22,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		[HttpPost]
-		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetSubgraphByQuery([FromBody] TwinGraphQuery query) {
 			var res = await _queryRepository.GetSubgraph(query);
