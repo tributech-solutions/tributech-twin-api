@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
@@ -23,13 +25,19 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		[HttpPut, HttpPost]
-		public ActionResult UpsertTwinGraph([FromBody] TwinGraphFile graph) {
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult> UpsertTwinGraph([FromBody] TwinGraphFile graph) {
 			var _twins = graph.Graph.DigitalTwins;
 			var _relationships = graph.Graph.Relationships;
-			var t = _twins.Select(async twin => await _twinRepository.CreateTwinAsync(twin)).ToArray();
-			var r = _relationships.Select(async rel => await _relRepository.CreateRelationshipAsync(rel)).ToArray();
+			var t = await Task.WhenAll(_twins.Select(twin => _twinRepository.CreateTwinAsync(twin)));
+			var r = await Task.WhenAll(_relationships.Select(rel => _relRepository.CreateRelationshipAsync(rel)));
 
-			return Ok(new { Twins = t.Count(), Relationships = r.Count() });
+
+			return Ok(new TwinGraph<dynamic, dynamic>() {
+				DigitalTwins = t.ToExpandoObject(),
+				Relationships = r.ToExpandoObject()
+			});
 		}
 	}
 }
