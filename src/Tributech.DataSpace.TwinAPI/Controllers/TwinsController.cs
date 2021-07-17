@@ -25,7 +25,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<DigitalTwin>))]
-		public async Task<IActionResult> GetAllTwins([FromQuery(Name = "pageNumber")] uint pageNumber = 1, [FromQuery(Name = "pageSize")] uint pageSize = 100) {
+		public async Task<IActionResult> GetAllTwins([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100) {
 			var results = await _twinRepository.GetTwinsPaginatedAsync(pageNumber, pageSize);
 			return Ok(new PaginatedResponse<object>(results.TotalElements, results.Content.Select(t => t.ToExpandoObject())));
 		}
@@ -34,7 +34,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[HttpGet("/model/{dtmi}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<DigitalTwin>))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetTwinsByModel(string dtmi, [FromQuery(Name = "pageNumber")] uint pageNumber = 1, [FromQuery(Name = "pageSize")] uint pageSize = 100) {
+		public async Task<IActionResult> GetTwinsByModel(string dtmi, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100) {
 			var paginated = await _twinRepository.GetTwinsByModelPaginatedAsync(dtmi, pageNumber, pageSize);
 			return Ok(new PaginatedResponse<object>(paginated.TotalElements, paginated.Content.Select(t => t.ToExpandoObject())));
 		}

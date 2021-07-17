@@ -8,7 +8,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 		public Task<DigitalTwin> UpsertTwinAsync(DigitalTwin twin);
 		public Task<DigitalTwin> DeleteTwinAsync(Guid twinId);
 		public Task<DigitalTwin> GetTwinAsync(Guid twinId);
-		public Task<PaginatedResponse<DigitalTwin>> GetTwinsPaginatedAsync(uint pageNumber, uint pageSize);
-		public Task<PaginatedResponse<DigitalTwin>> GetTwinsByModelPaginatedAsync(string dtmi, uint pageNumber, uint pageSize);
+		public Task<PaginatedResponse<DigitalTwin>> GetTwinsPaginatedAsync(int pageNumber, int pageSize);
+		public Task<PaginatedResponse<DigitalTwin>> GetTwinsByModelPaginatedAsync(string dtmi, int pageNumber, int pageSize);
 	}
 }
