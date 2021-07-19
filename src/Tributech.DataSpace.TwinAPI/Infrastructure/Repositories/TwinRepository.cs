@@ -33,7 +33,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 		public async Task<DigitalTwin> DeleteTwinAsync(Guid twinId) {
 			var results = await _client.Cypher
 			 .Match("(twin:Twin)")
-			 .Where((DigitalTwin twin) => twin.Id == twinId)
+			 .Where((DigitalTwinNode twin) => twin.Id == twinId)
 			 .DetachDelete("twin")
 			 .Return((twin) => twin.As<DigitalTwinNode>())
 			 .ResultsAsync;
