@@ -14,22 +14,10 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 
 		public TwinRepository(
 			ILogger<TwinRepository> logger,
-			IGraphClient graphClient) {
+			IGraphClient graphClient
+			) {
 			_client = graphClient;
 			_logger = logger;
-		}
-
-		public async Task<DigitalTwin> CreateTwinAsync(DigitalTwin twin) {
-			var results = await _client.Cypher
-				.Merge("(twin:Twin {Id: $id})")
-				.Set("twin = $twin")
-				.WithParam("twin", twin.ToDotNotationDictionary())
-				.WithParam("id", twin.Id)
-				.Return((twin) => twin.As<DigitalTwinNode>())
-				.ResultsAsync;
-
-			var mappedResults = results.MapToDigitalTwin();
-			return mappedResults.FirstOrDefault();
 		}
 
 		public async Task<DigitalTwin> DeleteTwinAsync(Guid twinId) {
@@ -77,13 +65,13 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 
 		public async Task<DigitalTwin> UpsertTwinAsync(DigitalTwin twin) {
 			var results = await _client.Cypher
-				.Merge("(twin:Twin {Id: $id})")
-				.OnMatch()
-				.Set("twin = $twin")
-				.WithParam("twin", twin.ToDotNotationDictionary())
-				.WithParam("id", twin.Id)
-				.Return((twin) => twin.As<DigitalTwinNode>())
-				.ResultsAsync;
+					.Merge("(twin:Twin {Id: $id})")
+					.Set("twin = $twin")
+					.Set($"twin:{string.Join(":", twin.Labels)}") // labels do not fully support upsert (no removal of existing labels)
+					.WithParam("twin", twin.ToDotNotationDictionary())
+					.WithParam("id", twin.Id)
+					.Return((twin) => twin.As<DigitalTwinNode>())
+					.ResultsAsync;
 			var mappedResults = results.MapToDigitalTwin();
 			return mappedResults.FirstOrDefault();
 		}

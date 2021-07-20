@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Tributech.DataSpace.TwinAPI.Application;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Tributech.DataSpace.TwinAPI.Model;
 
@@ -15,12 +16,12 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	[ApiController]
 	public class GraphController : ControllerBase {
 		private readonly ILogger<GraphController> _logger;
-		private readonly ITwinRepository _twinRepository;
+		private readonly ITwinService _twinService;
 		private readonly IRelationshipRepository _relRepository;
 
-		public GraphController(ILogger<GraphController> logger, ITwinRepository twinRepository, IRelationshipRepository relRepository) {
+		public GraphController(ILogger<GraphController> logger, ITwinService twinService, IRelationshipRepository relRepository) {
 			_logger = logger;
-			_twinRepository = twinRepository;
+			_twinService = twinService;
 			_relRepository = relRepository;
 		}
 
@@ -28,11 +29,10 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult> UpsertTwinGraph([FromBody] TwinGraphFile graph) {
-			var _twins = graph.Graph.DigitalTwins;
-			var _relationships = graph.Graph.Relationships;
-			var t = await Task.WhenAll(_twins.Select(twin => _twinRepository.CreateTwinAsync(twin)));
-			var r = await Task.WhenAll(_relationships.Select(rel => _relRepository.CreateRelationshipAsync(rel)));
-
+			var _twins = graph?.Graph?.DigitalTwins;
+			var _relationships = graph?.Graph?.Relationships;
+			var t = await Task.WhenAll(_twins?.Select(twin => _twinService.UpsertTwinAsync(twin)) ?? Enumerable.Empty<Task<DigitalTwin>>());
+			var r = await Task.WhenAll(_relationships?.Select(rel => _relRepository.CreateRelationshipAsync(rel)) ?? Enumerable.Empty<Task<Relationship>>());
 
 			return Ok(new TwinGraph<dynamic, dynamic>() {
 				DigitalTwins = t.ToExpandoObject(),

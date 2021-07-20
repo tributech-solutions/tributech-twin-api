@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
+using Tributech.DataSpace.TwinAPI.Application.Schema;
 
 namespace Tributech.DataSpace.TwinAPI.Application {
 	public static class DependencyInjection {
-		public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) {
-			return services;
-				//.AddSingleton<IAgentLinker, AgentLinker>()
+		public static IServiceCollection AddApplication(this IServiceCollection services) {
+			return services
+				.AddSingleton<ISchemaService, SchemaService>()
+				.AddScoped<ITwinService, TwinService>();
 		}
 	}
 }

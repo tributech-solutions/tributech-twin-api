@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Tributech.DataSpace.TwinAPI.Application;
 using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Options;
@@ -30,8 +31,9 @@ namespace Tributech.DataSpace.TwinAPI {
 			services.AddHealthChecks();
 			services.AddRouting(options => options.LowercaseUrls = true);
 
+			services.AddApplication();
 			services.AddInfrastructure(Configuration);
-
+			
 			// We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
 			services.AddControllers().AddNewtonsoftJson();
 			services.AddSwaggerCustom(apiAuthOptions);

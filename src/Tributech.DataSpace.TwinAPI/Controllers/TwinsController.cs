@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Tributech.DataSpace.TwinAPI.Application;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Tributech.DataSpace.TwinAPI.Model;
 
@@ -17,10 +18,12 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 	public class TwinsController : ControllerBase {
 		private readonly ILogger<TwinsController> _logger;
 		private readonly ITwinRepository _twinRepository;
+		private readonly ITwinService _twinService;
 
-		public TwinsController(ILogger<TwinsController> logger, ITwinRepository twinRepository) {
+		public TwinsController(ILogger<TwinsController> logger, ITwinRepository twinRepository, ITwinService twinService) {
 			_logger = logger;
 			_twinRepository = twinRepository;
+			_twinService = twinService;
 		}
 
 		[HttpGet]
@@ -51,17 +54,16 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> AddTwin([FromBody] DigitalTwin twin) {
-			var _twin = await _twinRepository.CreateTwinAsync(twin);
-			return Ok(_twin.ToExpandoObject());
-
+			twin = await _twinService.UpsertTwinAsync(twin);
+			return Ok(twin.ToExpandoObject());
 		}
 
 		[HttpPut("{dtid}")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
-			var _twin = await _twinRepository.UpsertTwinAsync(twin);
-			return Ok(_twin.ToExpandoObject());
+			twin = await _twinService.UpsertTwinAsync(twin);
+			return Ok(twin.ToExpandoObject());
 		}
 
 		[HttpDelete("{dtid}")]
