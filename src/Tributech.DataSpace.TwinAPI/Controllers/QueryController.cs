@@ -21,7 +21,23 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 			_queryRepository = queryRepository;
 		}
 
-		[HttpPost]
+		/// <summary>
+		/// Query twins and relationships using cypher query.
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		[HttpPost("cypher")]
+		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetByCypherQuery([FromQuery] TwinCypherQuery query) {
+			var res = await _queryRepository.GetByCypherQuery(query);
+			return Ok(new TwinGraph<dynamic, dynamic>() {
+				DigitalTwins = res?.DigitalTwins?.ToExpandoObject(),
+				Relationships = res?.Relationships?.ToExpandoObject()
+			});
+		}
+
+		[HttpPost("subgraph")]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetSubgraphByQuery([FromBody] TwinGraphQuery query) {

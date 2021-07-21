@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 using Tributech.DataSpace.TwinAPI.Model;
-using Relationship = Tributech.DataSpace.TwinAPI.Model.Relationship;
 using Tributech.Dsk.Api.Clients.CatalogApi;
 using Tributech.DataSpace.TwinAPI.Options;
 using Microsoft.Extensions.Logging;
@@ -39,7 +38,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure {
 				}
 
 				client.JsonConverters.Add(new DigitalTwinConverter());
-				client.JsonConverters.Add(new RelationshipConverter());
+				client.JsonConverters.Add(new RelationshipNodeConverter());
 
 				return client;
 			});
@@ -62,6 +61,12 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure {
 
 	public class DigitalTwinConverter : JsonConverter<DigitalTwinNode> {
 		public override DigitalTwinNode ReadJson(JsonReader reader, System.Type objectType, [AllowNull] DigitalTwinNode existingValue, bool hasExistingValue, JsonSerializer serializer) {
+			if (reader.TokenType == JsonToken.PropertyName && reader.Value as string == "data") {
+				reader.Read();
+				var ojb = JToken.ReadFrom(reader);
+				return ojb.ToObject<DigitalTwinNode>();
+			}
+
 			var jo = JObject.Load(reader);
 			var dataNode = jo["data"];
 			var stringified = dataNode.ToString();
@@ -74,18 +79,24 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure {
 			throw new NotImplementedException();
 		}
 	}
+	
+	public class RelationshipNodeConverter : JsonConverter<RelationshipNode> {
+		public override RelationshipNode ReadJson(JsonReader reader, System.Type objectType, [AllowNull] RelationshipNode existingValue, bool hasExistingValue, JsonSerializer serializer) {
+			if (reader.TokenType == JsonToken.PropertyName && reader.Value as string == "data") {
+				reader.Read();
+				var ojb = JToken.ReadFrom(reader);
+				return ojb.ToObject<RelationshipNode>();
+			}
 
-	public class RelationshipConverter : JsonConverter<Relationship> {
-		public override Relationship ReadJson(JsonReader reader, System.Type objectType, [AllowNull] Relationship existingValue, bool hasExistingValue, JsonSerializer serializer) {
 			var jo = JObject.Load(reader);
 			var dataNode = jo["data"];
 			var stringified = dataNode.ToString();
-			return JsonConvert.DeserializeObject<Relationship>(stringified);
+			return JsonConvert.DeserializeObject<RelationshipNode>(stringified);
 		}
 
 		public override bool CanWrite => false;
 
-		public override void WriteJson(JsonWriter writer, [AllowNull] Relationship value, JsonSerializer serializer) {
+		public override void WriteJson(JsonWriter writer, [AllowNull] RelationshipNode value, JsonSerializer serializer) {
 			throw new NotImplementedException();
 		}
 	}
