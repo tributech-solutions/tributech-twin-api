@@ -23,6 +23,7 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 
 		/// <summary>
 		/// Cypher query <a href="https://neo4j.com/docs/cypher-manual/current/clauses/match/" target="_blank">MATCH</a> part.
+		/// e.g. "(twin:Twin)", "(stream:Twin:BaseStreamTributechIoV1)", "(stream:Twin:BaseStreamTributechIoV1)-[relationship:Options]->(option:Twin:BaseOptionsTributechIoV1)",...
 		/// </summary>
 		/// <example>(stream:Twin:BaseStreamTributechIoV1)-[relationship:Options]->(option:Twin:BaseOptionsTributechIoV1)</example>
 		[Required]
@@ -30,14 +31,16 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 
 		/// <summary>
 		/// (Optional) Cypher query <a href="https://neo4j.com/docs/cypher-manual/current/clauses/where/" target="_blank">WHERE</a> part.
+		/// e.g. "stream.ValueMetadataId = '6e02502-bfc5-4182-aa3b-891965020e14'", "stream.MerkleTreeDepth IS NOT NULL", "option:PersistenceOptionsTributechIoV1",...
 		/// </summary>
 		/// <example>option:PublishOptionsTributechIoV1 OR option:PersistenceOptionsTributechIoV1</example>
 		public string Where { get; set; }
 
 		/// <summary>
 		/// Cypher query <a href="https://neo4j.com/docs/cypher-manual/current/clauses/with/" target="_blank">WITH</a> part.
-		/// The result must be projected to lists named "nodes" and "relationships" to be returned which can be done at the WITH part (e.g. "collect(distinct stream) AS nodes").
-		/// To return an empty list for one of them you can use "[] as relationships".
+		/// The result must be projected to lists named "nodes" and "relationships" to be returned which can be done at the WITH part.
+		/// To return an empty list for one of them you can use "[] AS relationships".
+		/// e.g. "stream AS nodes, [] AS nodes", "collect(distinct stream) + collect(distinct option) AS nodes, collect(relationship) AS relationships"),...
 		/// </summary>
 		/// <example>collect(distinct stream) + collect(distinct option) AS nodes, collect(relationship) AS relationships</example>
 		[Required]

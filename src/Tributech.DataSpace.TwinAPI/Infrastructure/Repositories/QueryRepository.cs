@@ -32,12 +32,12 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			 .ResultsAsync;
 
 			var mappedNodes = results.FirstOrDefault();
-			var nodes = mappedNodes.Nodes.Select((DigitalTwinNode t) => t.MapToDigitalTwin());
-			var rels = mappedNodes.Relationships.Select((RelationshipNode t) => t.MapToRelationship());
+			var nodes = mappedNodes?.Nodes?.Select((DigitalTwinNode t) => t.MapToDigitalTwin());
+			var rels = mappedNodes?.Relationships?.Select((RelationshipNode t) => t.MapToRelationship());
 
 			return new TwinGraph() {
-				Relationships = rels.ToArray(),
-				DigitalTwins = nodes.ToArray()
+				Relationships = rels?.ToArray(),
+				DigitalTwins = nodes?.ToArray()
 			};
 		}
 
@@ -53,12 +53,12 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			 .ResultsAsync;
 
 			var mappedNodes = results.FirstOrDefault();
-			var nodes = mappedNodes.Nodes.Select((DigitalTwinNode t) => t.MapToDigitalTwin());
-			var rels = mappedNodes.Relationships.Select((RelationshipNode t) => t.MapToRelationship());
+			var nodes = mappedNodes?.Nodes?.Select((DigitalTwinNode t) => t.MapToDigitalTwin());
+			var rels = mappedNodes?.Relationships?.Select((RelationshipNode t) => t.MapToRelationship());
 
 			return new TwinGraph() {
-				Relationships = rels.ToArray(),
-				DigitalTwins = nodes.ToArray()
+				Relationships = rels?.ToArray(),
+				DigitalTwins = nodes?.ToArray()
 			};
 		}
 
