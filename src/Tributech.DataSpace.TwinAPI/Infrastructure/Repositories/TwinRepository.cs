@@ -20,16 +20,12 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			_logger = logger;
 		}
 
-		public async Task<DigitalTwin> DeleteTwinAsync(Guid twinId) {
-			var results = await _client.Cypher
+		public async Task DeleteTwinAsync(Guid twinId) {
+			await _client.Cypher
 			 .Match("(twin:Twin)")
 			 .Where((DigitalTwin twin) => twin.Id == twinId)
 			 .DetachDelete("twin")
-			 .Return((twin) => twin.As<DigitalTwinNode>())
-			 .ResultsAsync;
-
-			var mappedResults = results.MapToDigitalTwin();
-			return mappedResults.FirstOrDefault();
+			 .ExecuteWithoutResultsAsync();
 		}
 
 		public async Task<DigitalTwin> GetTwinAsync(Guid twinId) {

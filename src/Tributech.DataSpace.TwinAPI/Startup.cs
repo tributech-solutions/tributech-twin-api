@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System;
+using Hellang.Middleware.ProblemDetails;
+using Hellang.Middleware.ProblemDetails.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,8 +18,11 @@ using Tributech.DataSpace.TwinAPI.Utils;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {
-		public Startup(IConfiguration configuration) {
+		private readonly IWebHostEnvironment _environment;
+
+		public Startup(IConfiguration configuration, IWebHostEnvironment environment) {
 			Configuration = configuration;
+			_environment = environment;
 		}
 
 		public IConfiguration Configuration { get; }
@@ -34,8 +42,13 @@ namespace Tributech.DataSpace.TwinAPI {
 			services.AddApplication();
 			services.AddInfrastructure(Configuration);
 			
-			// We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
-			services.AddControllers().AddNewtonsoftJson();
+			services.AddProblemDetails(ConfigureProblemDetails)
+					.AddControllers(cfg => {
+						// globally register 500 internal server error response type
+						cfg.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status500InternalServerError));
+					})
+					.AddNewtonsoftJson() // We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
+					.AddProblemDetailsConventions();
 			services.AddSwaggerCustom(apiAuthOptions);
 		}
 
@@ -43,7 +56,7 @@ namespace Tributech.DataSpace.TwinAPI {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			}
-		
+			app.UseProblemDetails();
 			app.UseRouting();
 
 			app.UseAuthentication();
@@ -55,6 +68,18 @@ namespace Tributech.DataSpace.TwinAPI {
 			});
 
 			app.UseSwaggerCustom(apiAuthOptionsAccessor.Value);
+		}
+
+		private void ConfigureProblemDetails(ProblemDetailsOptions options) {
+			//// Only include exception details in a development environment. There's really no nee
+			//// to set this as it's the default behavior. It's just included here for completeness :)
+			//options.IncludeExceptionDetails = (ctx, ex) => _environment.IsDevelopment();
+
+			//// This will map NotImplementedException to the 501 Not Implemented status code.
+			//options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+
+			//// Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
+			//options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
 		}
 	}
 }

@@ -11,6 +11,9 @@ using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 
+	/// <summary>
+	/// Manage digital twin graph.
+	/// </summary>
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	[Route("[controller]")]
 	[ApiController]
@@ -25,9 +28,14 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 			_relRepository = relRepository;
 		}
 
+		/// <summary>
+		/// Upsert digital twin graph.
+		/// </summary>
+		/// <param name="graph">The twin graph.</param>
+		/// <returns>The created/update twin graph.</returns>
 		[HttpPut, HttpPost]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<ActionResult> UpsertTwinGraph([FromBody] TwinGraphFile graph) {
 			var _twins = graph?.Graph?.DigitalTwins;
 			var _relationships = graph?.Graph?.Relationships;
