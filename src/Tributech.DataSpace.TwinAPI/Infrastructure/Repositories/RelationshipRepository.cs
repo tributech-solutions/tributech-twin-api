@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Neo4jClient.Cypher;
 using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
@@ -92,6 +93,26 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 
 			var mappedResults = results.MapToRelationship();
 			return mappedResults.FirstOrDefault();
+		}
+
+		public async Task<PaginatedResponse<Relationship>> GetRelationshipsPaginatedAsync(int pageNumber, int pageSize) {
+			ICypherFluentQuery baseQuery = _client.Cypher
+							.Match("(:Twin)-[relationship]-(:Twin)");
+
+			long count = (await baseQuery
+					.Return(relationship => relationship.CountDistinct())
+					.ResultsAsync)
+				.First();
+
+			IEnumerable<RelationshipNode> results = await baseQuery
+							.ReturnDistinct((relationship) => relationship.As<RelationshipNode>())
+							.OrderBy("relationship.Name", "relationship.Id", "relationship.SourceId", "relationship.TargetId")
+							.Skip((pageNumber - 1) * pageSize)
+							.Limit(pageSize)
+							.ResultsAsync;
+
+			IEnumerable<Relationship> mappedResults = results.MapToRelationship();
+			return new PaginatedResponse<Relationship>(count, mappedResults);
 		}
 	}
 }

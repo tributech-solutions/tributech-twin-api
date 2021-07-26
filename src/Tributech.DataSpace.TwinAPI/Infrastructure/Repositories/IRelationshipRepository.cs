@@ -9,7 +9,9 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 		public Task<Relationship> UpsertRelationshipAsync(Relationship relationship);
 		public Task<Relationship> DeleteRelationshipAsync(Guid relationshipId);
 		public Task<Relationship> GetRelationshipAsync(Guid relationshipId);
+		public Task<PaginatedResponse<Relationship>> GetRelationshipsPaginatedAsync(int pageNumber, int pageSize);
 		public Task<IEnumerable<Relationship>> GetOutgoingRelationshipsAsync(Guid twinId);
 		public Task<IEnumerable<Relationship>> GetIncomingRelationshipsAsync(Guid twinId);
+		
 	}
 }
