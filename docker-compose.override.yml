@@ -12,6 +12,8 @@ services:
       - "5120:80"
     networks:
       - data-net
+    depends_on:
+      - neo4j
   neo4j:
     image: neo4j:4.2.3
     restart: always

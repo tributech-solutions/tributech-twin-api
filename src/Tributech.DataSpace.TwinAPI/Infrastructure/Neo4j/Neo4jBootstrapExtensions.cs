@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Neo4j.Driver;
 using Neo4jClient;
 using Polly;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j {
 	public static class Neo4jBootstrapExtensions {
@@ -24,10 +26,11 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j {
 					logger.LogDebug("Trying to connect to Neo4j database...");
 
 					await Policy
-						.Handle<Exception>()
+						.Handle<ServiceUnavailableException>()
+						.Or<TransientException>()
 						.WaitAndRetryAsync(5, 
 							retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), 
-							onRetry: (ex,t) => logger.LogWarning(ex, "Error during establishing connection to Neo4j database. Retry in {WaitDuration}s...", t.TotalSeconds)
+							onRetry: (ex,t) => logger.LogInformation("Couldn't establish connection to Neo4j database yet. Retry in {WaitDuration}s...", t.TotalSeconds)
 						)
 						.ExecuteAsync(() => neo4jClient.ConnectAsync());
 

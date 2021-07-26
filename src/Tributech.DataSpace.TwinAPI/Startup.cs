@@ -1,5 +1,4 @@
-﻿using System;
-using Hellang.Middleware.ProblemDetails;
+﻿using Hellang.Middleware.ProblemDetails;
 using Hellang.Middleware.ProblemDetails.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Tributech.DataSpace.TwinAPI.Application;
 using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
+using Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j;
 using Tributech.DataSpace.TwinAPI.Options;
 using Tributech.DataSpace.TwinAPI.Utils;
 
@@ -36,7 +36,8 @@ namespace Tributech.DataSpace.TwinAPI {
 					options.Audience = apiAuthOptions.Audience;
 				});
 
-			services.AddHealthChecks();
+			services.AddHealthChecks()
+					.AddCheck<Neo4jHealthCheck>(nameof(Neo4jHealthCheck), tags: new[] { "neo4j", "db" });
 			services.AddRouting(options => options.LowercaseUrls = true);
 
 			services.AddApplication();
