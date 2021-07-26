@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neo4jClient;
+using Polly;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j {
 	public static class Neo4jBootstrapExtensions {
@@ -21,7 +22,15 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j {
 				IGraphClient neo4jClient = serviceScope.ServiceProvider.GetRequiredService<IGraphClient>();
 				if (!neo4jClient.IsConnected) {
 					logger.LogDebug("Trying to connect to Neo4j database...");
-					await neo4jClient.ConnectAsync();
+
+					await Policy
+						.Handle<Exception>()
+						.WaitAndRetryAsync(5, 
+							retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), 
+							onRetry: (ex,t) => logger.LogWarning(ex, "Error during establishing connection to Neo4j database. Retry in {WaitDuration}s...", t.TotalSeconds)
+						)
+						.ExecuteAsync(() => neo4jClient.ConnectAsync());
+
 					logger.LogDebug("Connected to Neo4j database.");
 				}
 				await CreateConstraints(neo4jClient);
