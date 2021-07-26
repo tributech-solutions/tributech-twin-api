@@ -8,20 +8,21 @@ namespace Tributech.DataSpace.TwinAPI.Application.Schema {
 	public class SchemaService : ISchemaService {
 		private readonly CatalogAPIClient _catalogAPIClient;
 		// schemas are immutable that's why we cache them forever and use a dict
-		private readonly ConcurrentDictionary<string, ExpandedInterface> _models = new ConcurrentDictionary<string, ExpandedInterface>();
+		// mapping from model type to base model types (DTMI)
+		private readonly ConcurrentDictionary<string, IEnumerable<string>> _baseModels = new ConcurrentDictionary<string, IEnumerable<string>>();
 
 		public SchemaService(CatalogAPIClient catalogAPIClient) {
 			_catalogAPIClient = catalogAPIClient;
 		}
 
 		public async Task<IEnumerable<string>> GetBaseModels(string dtmi, CancellationToken cancellationToken = default) {
-			if (!_models.TryGetValue(dtmi, out ExpandedInterface model)) {
+			if (!_baseModels.TryGetValue(dtmi, out IEnumerable<string> baseModels)) {
 				// in a worst case retrieval could happen multiple times since we do not use locking here but it's not critical for now
 				// as alternative we could consider e.g. locking or https://github.com/alastairtree/LazyCache
-				model = await _catalogAPIClient.GetExpandedAsync(dtmi, cancellationToken);
-				_models.GetOrAdd(dtmi, model);
+				baseModels = await _catalogAPIClient.GetBasesAsync(dtmi, cancellationToken);
+				_baseModels.GetOrAdd(dtmi, baseModels);
 			}
-			return model.Bases;
+			return baseModels;
 		}
 	}
 }
