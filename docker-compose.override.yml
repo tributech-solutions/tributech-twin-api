@@ -7,10 +7,33 @@ services:
       dockerfile: src/Tributech.DataSpace.TwinAPI/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Neo4jOptions__Host=neo4j://neo4j:7687
     ports:
       - "5120:80"
     networks:
       - data-net
+  neo4j:
+    image: neo4j:4.2.3
+    restart: always
+    environment:
+      - NEO4J_dbms.security.procedures.allowlist=apoc.*,algo.*
+      - NEO4J_AUTH=neo4j/password
+      - NEO4JLABS_PLUGINS=["apoc"]
+    networks:
+      - data-net
+    volumes:
+      - neo4j:/data
+    ports:
+      - "7474:7474"
+      - "7473:7473"
+      - "7687:7687"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
 
 networks:
   data-net:
+volumes:
+  neo4j:
