@@ -26,13 +26,13 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		}
 
 		/// <summary>
-		/// Query digital twins and relationships using cypher query.
+		/// Query digital twin graph using cypher query.
 		/// </summary>
 		/// <param name="query">The cypher query.</param>
 		/// <returns>The digital twin (sub-)graph.</returns>
-		[HttpPost("cypher")]
+		[HttpPost("cypher", Name = nameof(GetTwinGraphByCypherQuery))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
-		public async Task<IActionResult> GetByCypherQuery([FromQuery] TwinCypherQuery query) {
+		public async Task<IActionResult> GetTwinGraphByCypherQuery([FromQuery] TwinCypherQuery query) {
 			TwinGraph res = await _queryRepository.GetByCypherQuery(query);
 			return Ok(new TwinGraph<dynamic, dynamic>() {
 				DigitalTwins = res?.DigitalTwins?.ToExpandoObject() ?? Array.Empty<dynamic>(),
@@ -45,9 +45,9 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="query">The graph query</param>
 		/// <returns>The digital twin (sub-)graph.</returns>
-		[HttpPost("subgraph")]
+		[HttpPost("subgraph", Name = nameof(GetTwinGraphByQuery))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
-		public async Task<IActionResult> GetSubgraphByQuery([FromBody] TwinGraphQuery query) {
+		public async Task<IActionResult> GetTwinGraphByQuery([FromBody] TwinGraphQuery query) {
 			TwinGraph res = await _queryRepository.GetSubgraph(query);
 			return Ok(new TwinGraph<dynamic, dynamic>() {
 				DigitalTwins = res?.DigitalTwins?.ToExpandoObject() ?? Array.Empty<dynamic>(),

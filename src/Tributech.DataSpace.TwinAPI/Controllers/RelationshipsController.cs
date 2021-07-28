@@ -32,7 +32,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="dtId">The digital twin identifier.</param>
 		/// <returns>List of outgoing relationships of the digital twin.</returns>
-		[HttpGet("/outgoing/{dtId}")]
+		[HttpGet("/outgoing/{dtId}", Name = nameof(GetOutgoingRelationships))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Relationship>))]
 		public async Task<IActionResult> GetOutgoingRelationships(Guid dtId) {
 			IEnumerable<Relationship> res = await _relRepository.GetOutgoingRelationshipsAsync(dtId);
@@ -44,7 +44,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="dtId">The digital twin identifier.</param>
 		/// <returns>List of incoming relationships of the digital twin.</returns>
-		[HttpGet("/incoming/{dtId}")]
+		[HttpGet("/incoming/{dtId}", Name = nameof(GetIncomingRelationships))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Relationship>))]
 		public async Task<IActionResult> GetIncomingRelationships(Guid dtId) {
 			IEnumerable<Relationship> res = await _relRepository.GetIncomingRelationshipsAsync(dtId);
@@ -57,7 +57,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// <param name="pageNumber">The page number. Default:1</param>
 		/// <param name="pageSize">The page size. Default:100</param>
 		/// <returns>List of digital twins relationships.</returns>
-		[HttpGet]
+		[HttpGet(Name = nameof(GetAllRelationships))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<Relationship>))]
 		public async Task<IActionResult> GetAllRelationships([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100) {
 			PaginatedResponse<Relationship> results = await _relRepository.GetRelationshipsPaginatedAsync(pageNumber, pageSize);
@@ -69,10 +69,10 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="relationshipId">The relationship identifier.</param>
 		/// <returns>The relationship.</returns>
-		[HttpGet("{relationshipId}")]
+		[HttpGet("{relationshipId}", Name = nameof(GetRelationshipById))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetRelationship(Guid relationshipId) {
+		public async Task<IActionResult> GetRelationshipById(Guid relationshipId) {
 			Relationship res = await _relRepository.GetRelationshipAsync(relationshipId);
 			if (res == null) {
 				return NotFound();
@@ -86,7 +86,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="relationship">The relationship.</param>
 		/// <returns>The relationship.</returns>
-		[HttpPost]
+		[HttpPost(Name = nameof(CreateRelationship))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<IActionResult> CreateRelationship([FromBody] Relationship relationship) {
@@ -105,7 +105,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// <param name="relationshipId">The relationship identifier.</param>
 		/// <param name="relationship">The relationship.</param>
 		/// <returns>The relationship.</returns>
-		[HttpPut("{relationshipId}")]
+		[HttpPut("{relationshipId}", Name = nameof(UpsertRelationship))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Relationship))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<IActionResult> UpsertRelationship(Guid relationshipId, [FromBody] Relationship relationship) {
@@ -122,9 +122,9 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// Delete relationship of digital twins (if exists).
 		/// </summary>
 		/// <param name="relationshipId">The relationship identifier.</param>
-		[HttpDelete("{relationshipId}")]
+		[HttpDelete("{relationshipId}", Name = nameof(DeleteRelationship))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> Delete(Guid relationshipId) {
+		public async Task<IActionResult> DeleteRelationship(Guid relationshipId) {
 			await _relRepository.DeleteRelationshipAsync(relationshipId);
 			return Ok();
 		}

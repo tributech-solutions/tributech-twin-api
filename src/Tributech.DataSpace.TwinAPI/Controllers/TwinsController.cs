@@ -35,7 +35,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// <param name="pageNumber">The page number. Default:1</param>
 		/// <param name="pageSize">The page size. Default:100</param>
 		/// <returns>Paged result list of digital twins.</returns>
-		[HttpGet]
+		[HttpGet(Name = nameof(GetAllTwins))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<DigitalTwin>))]
 		public async Task<IActionResult> GetAllTwins([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100) {
 			PaginatedResponse<DigitalTwin> results = await _twinRepository.GetTwinsPaginatedAsync(pageNumber, pageSize);
@@ -49,9 +49,9 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// <param name="pageNumber">The page number. Default:1</param>
 		/// <param name="pageSize">The page size. Default:100</param>
 		/// <returns>Paged result list of digital twins.</returns>
-		[HttpGet("/model/{dtmi}")]
+		[HttpGet("/model/{dtmi}", Name = nameof(GetTwinsByModelId))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginatedResponse<DigitalTwin>))]
-		public async Task<IActionResult> GetTwinsByModel(string dtmi, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100) {
+		public async Task<IActionResult> GetTwinsByModelId(string dtmi, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100) {
 			PaginatedResponse<DigitalTwin> paginated = await _twinRepository.GetTwinsByModelPaginatedAsync(dtmi, pageNumber, pageSize);
 			return Ok(new PaginatedResponse<object>(paginated.TotalElements, paginated.Content.Select(t => t.ToExpandoObject())));
 		}
@@ -61,10 +61,10 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="dtid">The digital twin identifier.</param>
 		/// <returns>The digital twin.</returns>
-		[HttpGet("{dtid}")]
+		[HttpGet("{dtid}", Name = nameof(GetTwinById))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetTwin(Guid dtid) {
+		public async Task<IActionResult> GetTwinById(Guid dtid) {
 			DigitalTwin twin = await _twinRepository.GetTwinAsync(dtid);
 			if (twin == null) {
 				return NotFound();
@@ -77,10 +77,10 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="twin">The digital twin.</param>
 		/// <returns>The digital twin.</returns>
-		[HttpPost]
+		[HttpPost(Name = nameof(CreateTwin))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-		public async Task<IActionResult> AddTwin([FromBody] DigitalTwin twin) {
+		public async Task<IActionResult> CreateTwin([FromBody] DigitalTwin twin) {
 			twin = await _twinService.UpsertTwinAsync(twin);
 			return Ok(twin.ToExpandoObject());
 		}
@@ -91,7 +91,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// <param name="dtid">The digital twin identifier.</param>
 		/// <param name="twin">The digital twin.</param>
 		/// <returns>The digital twin.</returns>
-		[HttpPut("{dtid}")]
+		[HttpPut("{dtid}", Name = nameof(UpsertTwin))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<IActionResult> UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
@@ -104,9 +104,9 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// Delete digital twin (if exists) and all its relationsips.
 		/// </summary>
 		/// <param name="dtid">The digital twin identifier.</param>
-		[HttpDelete("{dtid}")]
+		[HttpDelete("{dtid}", Name = nameof(DeleteTwin))]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<IActionResult> Delete(Guid dtid) {
+		public async Task<IActionResult> DeleteTwin(Guid dtid) {
 			await _twinRepository.DeleteTwinAsync(dtid);
 			return Ok();
 		}

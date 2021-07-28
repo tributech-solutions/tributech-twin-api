@@ -33,7 +33,7 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		/// </summary>
 		/// <param name="graph">The twin graph.</param>
 		/// <returns>The created/update twin graph.</returns>
-		[HttpPut, HttpPost]
+		[HttpPut(Name = nameof(UpsertTwinGraph))]
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TwinGraph))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<ActionResult> UpsertTwinGraph([FromBody] TwinGraphFile graph) {
