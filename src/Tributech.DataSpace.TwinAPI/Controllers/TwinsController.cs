@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tributech.DataSpace.TwinAPI.Application;
+using Tributech.DataSpace.TwinAPI.Application.Exceptions;
+using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Tributech.DataSpace.TwinAPI.Model;
 
@@ -81,7 +83,13 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DigitalTwin))]
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<IActionResult> CreateTwin([FromBody] DigitalTwin twin) {
-			twin = await _twinService.UpsertTwinAsync(twin);
+			try {
+				twin = await _twinService.UpsertTwinAsync(twin);
+			}
+			catch (InstanceValidationException ex) {
+				ModelState.AddModelErrors(ex.Errors);
+				return BadRequest(ModelState);
+			}
 			return Ok(twin.ToExpandoObject());
 		}
 
@@ -96,7 +104,13 @@ namespace Tributech.DataSpace.TwinAPI.Controllers {
 		[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
 		public async Task<IActionResult> UpsertTwin(Guid dtid, [FromBody] DigitalTwin twin) {
 			twin.Id = dtid;
-			twin = await _twinService.UpsertTwinAsync(twin);
+			try {
+				twin = await _twinService.UpsertTwinAsync(twin);
+			}
+			catch (InstanceValidationException ex) {
+				ModelState.AddModelErrors(ex.Errors);
+				return BadRequest(ModelState);
+			}
 			return Ok(twin.ToExpandoObject());
 		}
 

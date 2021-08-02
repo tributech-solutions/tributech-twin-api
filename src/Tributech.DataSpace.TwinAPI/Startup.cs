@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +16,7 @@ using Tributech.DataSpace.TwinAPI.Infrastructure;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j;
 using Tributech.DataSpace.TwinAPI.Options;
 using Tributech.DataSpace.TwinAPI.Utils;
+using Tributech.Dsk.CatalogApi.Client;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {
@@ -45,7 +47,8 @@ namespace Tributech.DataSpace.TwinAPI {
 			
 			services.AddProblemDetails(ConfigureProblemDetails)
 					.AddControllers(cfg => {
-						// globally register 500 internal server error response type
+						// globally register response types
+						cfg.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status401Unauthorized));
 						cfg.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status500InternalServerError));
 					})
 					.AddNewtonsoftJson() // We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
@@ -72,15 +75,17 @@ namespace Tributech.DataSpace.TwinAPI {
 		}
 
 		private void ConfigureProblemDetails(ProblemDetailsOptions options) {
-			//// Only include exception details in a development environment. There's really no nee
-			//// to set this as it's the default behavior. It's just included here for completeness :)
-			//options.IncludeExceptionDetails = (ctx, ex) => _environment.IsDevelopment();
-
-			//// This will map NotImplementedException to the 501 Not Implemented status code.
-			//options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
-
-			//// Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
-			//options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+			//include/exclude exceptions, adapt mappings,...
+			options.Map(
+				(HttpContext _, ApiException ex) => ex.StatusCode == StatusCodes.Status401Unauthorized,
+				(HttpContext _, ApiException ex) => {
+					const int statusCode = StatusCodes.Status401Unauthorized;
+					return new ProblemDetails {
+						Status = statusCode,
+						Title = ReasonPhrases.GetReasonPhrase(statusCode),
+						Type = $"https://httpstatuses.com/{statusCode}"
+					};
+				});
 		}
 	}
 }

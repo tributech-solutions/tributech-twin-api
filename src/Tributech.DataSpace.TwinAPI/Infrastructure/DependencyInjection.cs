@@ -10,10 +10,10 @@ using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 using Tributech.DataSpace.TwinAPI.Model;
-using Tributech.Dsk.Api.Clients.CatalogApi;
 using Tributech.DataSpace.TwinAPI.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Tributech.Dsk.CatalogApi.Client;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure {
 	public static class DependencyInjection {
@@ -49,7 +49,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure {
 
 			services.AddHttpContextAccessor();
 			services.AddTransient<CatalogApiAuthHandler>();
-			services.AddHttpClient<CatalogAPIClient>((sp, client) => {
+			services.AddHttpClient<CatalogApiClient>((sp, client) => {
 					IOptions<CatalogApiOptions> options = sp.GetRequiredService<IOptions<CatalogApiOptions>>();
 					client.BaseAddress = new Uri(options.Value.Url);
 				})
