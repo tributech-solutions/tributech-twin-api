@@ -61,10 +61,5 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 				DigitalTwins = nodes?.ToArray()
 			};
 		}
-
-		public class Foo {
-			public DigitalTwinNode[] Nodes { get; set; }
-			public RelationshipNode[] Relationships { get; set; }
-		}
 	}
 }
