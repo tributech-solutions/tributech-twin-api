@@ -40,7 +40,7 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 		/// Cypher query <a href="https://neo4j.com/docs/cypher-manual/current/clauses/with/" target="_blank">WITH</a> part.
 		/// The result must be projected to lists named "nodes" and "relationships" to be returned which can be done at the WITH part.
 		/// To return an empty list for one of them you can use "[] AS relationships".
-		/// e.g. "stream AS nodes, [] AS nodes", "collect(distinct stream) + collect(distinct option) AS nodes, collect(relationship) AS relationships"),...
+		/// e.g. "stream AS nodes, [] AS relationships", "collect(distinct stream) + collect(distinct option) AS nodes, collect(relationship) AS relationships"),...
 		/// </summary>
 		/// <example>collect(distinct stream) + collect(distinct option) AS nodes, collect(relationship) AS relationships</example>
 		[Required]
