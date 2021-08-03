@@ -7,6 +7,12 @@ using Newtonsoft.Json.Linq;
 
 namespace Tributech.DataSpace.TwinAPI.Model {
 	public class DigitalTwin {
+
+		/// <summary>
+		/// Default Neo4j labels for a twin.
+		/// </summary>
+		public static IEnumerable<string> DefaultLabels = new[] { "Twin" };
+
 		[JsonProperty("$dtId")]
 		public Guid Id { get; set; }
 
@@ -15,6 +21,20 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 
 		[JsonProperty("$metadata")]
 		public DigitalTwinMetadata Metadata { get; set; }
+
+		/// <summary>
+		/// Neo4J labels for the twin.
+		/// Default labels: "Twin".
+		/// The property which is only used internally is not getting serialized.
+		/// </summary>
+		[JsonIgnore]
+		public List<string> Labels { get; private set; } = DefaultLabels.ToList();
+
+		/// <summary>
+		/// Add Neo4J labels (names should be PascalCase).
+		/// </summary>
+		/// <param name="labels"></param>
+		public void AddLabels(params string[] labels) => Labels.AddRange(labels);
 
 		[JsonExtensionData]
 		public IDictionary<string, object> Properties;

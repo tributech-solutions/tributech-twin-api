@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Neo4jClient;
+using Neo4jClient.Cypher;
 using Tributech.DataSpace.TwinAPI.Model;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
@@ -12,34 +14,18 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 
 		public TwinRepository(
 			ILogger<TwinRepository> logger,
-			IGraphClient graphClient) {
+			IGraphClient graphClient
+			) {
 			_client = graphClient;
 			_logger = logger;
 		}
 
-		public async Task<DigitalTwin> CreateTwinAsync(DigitalTwin twin) {
-			var results = await _client.Cypher
-				.Merge("(twin:Twin {Id: $id})")
-				.Set("twin = $twin")
-				.WithParam("twin", twin.ToDotNotationDictionary())
-				.WithParam("id", twin.Id)
-				.Return((twin) => twin.As<DigitalTwinNode>())
-				.ResultsAsync;
-
-			var mappedResults = results.MapToDigitalTwin();
-			return mappedResults.FirstOrDefault();
-		}
-
-		public async Task<DigitalTwin> DeleteTwinAsync(Guid twinId) {
-			var results = await _client.Cypher
+		public async Task DeleteTwinAsync(Guid twinId) {
+			await _client.Cypher
 			 .Match("(twin:Twin)")
 			 .Where((DigitalTwinNode twin) => twin.Id == twinId)
 			 .DetachDelete("twin")
-			 .Return((twin) => twin.As<DigitalTwinNode>())
-			 .ResultsAsync;
-
-			var mappedResults = results.MapToDigitalTwin();
-			return mappedResults.FirstOrDefault();
+			 .ExecuteWithoutResultsAsync();
 		}
 
 		public async Task<DigitalTwin> GetTwinAsync(Guid twinId) {
@@ -53,36 +39,58 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			return mappedResults.FirstOrDefault();
 		}
 
-		public async Task<PaginatedResponse<DigitalTwin>> GetTwinsPaginatedAsync(uint pageNumber, uint pageSize) {
-			var results = await _client.Cypher
-				.Match("(twin:Twin)")
-				.Return((twin) => twin.As<DigitalTwinNode>())
-				.ResultsAsync;
-			var mappedResults = results.MapToDigitalTwin();
-			return new PaginatedResponse<DigitalTwin>(mappedResults.Count(), mappedResults);
+		public async Task<PaginatedResponse<DigitalTwin>> GetTwinsPaginatedAsync(int pageNumber, int pageSize) {
+			ICypherFluentQuery baseQuery = _client.Cypher
+							.Match("(twin:Twin)");
+
+			long count = (await baseQuery
+					.Return(twin => twin.Count())
+					.ResultsAsync)
+				.First();
+
+			IEnumerable<DigitalTwinNode> results = await baseQuery
+							.Return((twin) => twin.As<DigitalTwinNode>())
+							.OrderBy("twin.ModelId", "twin.Id")
+							.Skip((pageNumber - 1) * pageSize)
+							.Limit(pageSize)
+							.ResultsAsync;
+
+			IEnumerable<DigitalTwin> mappedResults = results.MapToDigitalTwin();
+			return new PaginatedResponse<DigitalTwin>(count, mappedResults);
 		}
 
 		public async Task<DigitalTwin> UpsertTwinAsync(DigitalTwin twin) {
 			var results = await _client.Cypher
-				.Merge("(twin:Twin {Id: $id})")
-				.OnMatch()
-				.Set("twin = $twin")
-				.WithParam("twin", twin.ToDotNotationDictionary())
-				.WithParam("id", twin.Id)
-				.Return((twin) => twin.As<DigitalTwinNode>())
-				.ResultsAsync;
+					.Merge("(twin:Twin {Id: $id})")
+					.Set("twin = $twin")
+					.Set($"twin:{string.Join(":", twin.Labels)}") // labels do not fully support upsert (no removal of existing labels)
+					.WithParam("twin", twin.ToDotNotationDictionary())
+					.WithParam("id", twin.Id)
+					.Return((twin) => twin.As<DigitalTwinNode>())
+					.ResultsAsync;
 			var mappedResults = results.MapToDigitalTwin();
 			return mappedResults.FirstOrDefault();
 		}
 
-		public async Task<PaginatedResponse<DigitalTwin>> GetTwinsByModelPaginatedAsync(string dtmi, uint pageNumber, uint pageSize) {
-			var results = await _client.Cypher
-				.Match("(twin:Twin {ModelId: $id})")
-				.WithParam("id", dtmi)
-				.Return((twin) => twin.As<DigitalTwinNode>())
-				.ResultsAsync;
-			var mappedResults = results.MapToDigitalTwin();
-			return new PaginatedResponse<DigitalTwin>(mappedResults.Count(), mappedResults);
+		public async Task<PaginatedResponse<DigitalTwin>> GetTwinsByModelPaginatedAsync(string dtmi, int pageNumber, int pageSize) {
+			ICypherFluentQuery baseQuery = _client.Cypher
+							.Match("(twin:Twin {ModelId: $id})")
+							.WithParam("id", dtmi);
+
+			long count = (await baseQuery
+					.Return(twin => twin.Count())
+					.ResultsAsync)
+				.First();
+
+			IEnumerable<DigitalTwinNode> results = await baseQuery
+							.Return((twin) => twin.As<DigitalTwinNode>())
+							.OrderBy("twin.Id")
+							.Skip((pageNumber - 1) * pageSize)
+							.Limit(pageSize)
+							.ResultsAsync;
+
+			IEnumerable<DigitalTwin> mappedResults = results.MapToDigitalTwin();
+			return new PaginatedResponse<DigitalTwin>(count, mappedResults);
 		}
 
 	}

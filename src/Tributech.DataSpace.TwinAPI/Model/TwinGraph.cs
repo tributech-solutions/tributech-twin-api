@@ -26,10 +26,12 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 	}
 
 	public class TwinGraphFile {
+		public const string GraphJsonPropertyName = "digitalTwinsGraph";
+
 		[JsonProperty("digitalTwinsFileInfo")]
 		public TwinGraphFileInfo FileInfo { get; set; }
 
-		[JsonProperty("digitalTwinsGraph")]
+		[JsonProperty(GraphJsonPropertyName)]
 		public TwinGraph Graph { get; set; }
 	}
 }
