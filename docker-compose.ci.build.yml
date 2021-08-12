@@ -1,0 +1,7 @@
+version: '3.4'
+
+services:
+  twin-api:
+    build:
+      context: .
+      dockerfile: src/Tributech.DataSpace.TwinAPI/Dockerfile
