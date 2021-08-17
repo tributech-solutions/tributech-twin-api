@@ -6,7 +6,7 @@
     <ProjectGuid>89eac4e7-4d8d-41b2-92c6-54e5c950ce7d</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>token-api</DockerServiceName>
+    <DockerServiceName>twin-api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.db.run.yml" />
