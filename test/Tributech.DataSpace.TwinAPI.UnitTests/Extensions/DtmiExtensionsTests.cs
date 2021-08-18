@@ -32,6 +32,7 @@ namespace Tributech.DataSpace.TwinAPI.UnitTests {
 		[InlineData("dtmi:io:tributech:device:edge;1", "EdgeDeviceTributechIoV1")]
 		[InlineData("dtmi:io:tributech:source:simulated;1", "SimulatedSourceTributechIoV1")]
 		[InlineData("dtmi:io:tributech:source:simulated;123456789", "SimulatedSourceTributechIoV123456789")]
+		[InlineData("dtmi:io:tributech:stream:siemens_industrial_edge;1", "SiemensIndustrialEdgeStreamTributechIoV1")]
 		[Theory]
 		public void ToLabel_ShouldWork(string dtmi, string expected) {
 			// ACT
