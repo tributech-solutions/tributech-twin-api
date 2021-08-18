@@ -43,7 +43,7 @@ namespace Tributech.DataSpace.TwinAPI.Extensions {
 			}
 
 			string path = regexMatch.Groups["path"].Value;
-			string reversedPascalCasePath = string.Join("", path.Split(":").Reverse().Select(p => p.Substring(0, 1).ToUpper() + p.Substring(1)));
+			string reversedPascalCasePath = string.Join("", path.Split(":").Reverse().SelectMany(p => p.Split("_")).Select(p => p.Substring(0, 1).ToUpper() + p.Substring(1)));
 			string version = regexMatch.Groups["version"].Value;
 
 			return $"{reversedPascalCasePath}V{version}";
