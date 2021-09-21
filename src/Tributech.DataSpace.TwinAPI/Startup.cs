@@ -1,19 +1,30 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hellang.Middleware.ProblemDetails;
+using Hellang.Middleware.ProblemDetails.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Tributech.DataSpace.TwinAPI.Application;
 using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure;
+using Tributech.DataSpace.TwinAPI.Infrastructure.Neo4j;
 using Tributech.DataSpace.TwinAPI.Options;
 using Tributech.DataSpace.TwinAPI.Utils;
+using Tributech.Dsk.CatalogApi.Client;
 
 namespace Tributech.DataSpace.TwinAPI {
 	public class Startup {
-		public Startup(IConfiguration configuration) {
+		private readonly IWebHostEnvironment _environment;
+
+		public Startup(IConfiguration configuration, IWebHostEnvironment environment) {
 			Configuration = configuration;
+			_environment = environment;
 		}
 
 		public IConfiguration Configuration { get; }
@@ -27,13 +38,21 @@ namespace Tributech.DataSpace.TwinAPI {
 					options.Audience = apiAuthOptions.Audience;
 				});
 
-			services.AddHealthChecks();
+			services.AddHealthChecks()
+					.AddCheck<Neo4jHealthCheck>(nameof(Neo4jHealthCheck), tags: new[] { "neo4j", "db" });
 			services.AddRouting(options => options.LowercaseUrls = true);
 
+			services.AddApplication();
 			services.AddInfrastructure(Configuration);
-
-			// We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
-			services.AddControllers().AddNewtonsoftJson();
+			
+			services.AddProblemDetails(ConfigureProblemDetails)
+					.AddControllers(cfg => {
+						// globally register response types
+						cfg.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status401Unauthorized));
+						cfg.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status500InternalServerError));
+					})
+					.AddNewtonsoftJson() // We use Newtonsoft as our Neo4j client library requires it and we dont want to mix two frameworks.
+					.AddProblemDetailsConventions();
 			services.AddSwaggerCustom(apiAuthOptions);
 		}
 
@@ -41,7 +60,7 @@ namespace Tributech.DataSpace.TwinAPI {
 			if (env.IsDevelopment()) {
 				app.UseDeveloperExceptionPage();
 			}
-		
+			app.UseProblemDetails();
 			app.UseRouting();
 
 			app.UseAuthentication();
@@ -53,6 +72,20 @@ namespace Tributech.DataSpace.TwinAPI {
 			});
 
 			app.UseSwaggerCustom(apiAuthOptionsAccessor.Value);
+		}
+
+		private void ConfigureProblemDetails(ProblemDetailsOptions options) {
+			//include/exclude exceptions, adapt mappings,...
+			options.Map(
+				(HttpContext _, ApiException ex) => ex.StatusCode == StatusCodes.Status401Unauthorized,
+				(HttpContext _, ApiException ex) => {
+					const int statusCode = StatusCodes.Status401Unauthorized;
+					return new ProblemDetails {
+						Status = statusCode,
+						Title = ReasonPhrases.GetReasonPhrase(statusCode),
+						Type = $"https://httpstatuses.com/{statusCode}"
+					};
+				});
 		}
 	}
 }
