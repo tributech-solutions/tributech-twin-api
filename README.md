@@ -18,7 +18,6 @@ Models can be added to the [Catalog API](https://github.com/tributech-solutions/
 
 [Tributech Data-Asset Models](https://github.com/tributech-solutions/data-asset-twin)
 
-[Tributech Data-Asset Models](https://github.com/tributech-solutions/data-asset-twin)
 [Tributech GAIA-X Self Description Models](https://github.com/tributech-solutions/gaia-x-self-descriptions)
 
 ## Development
