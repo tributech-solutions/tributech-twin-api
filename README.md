@@ -12,6 +12,13 @@ Responsibilities:
 - Add/Edit relationships
 - Remove relationships
 
+## Using models
+
+Models can be added to the [Catalog API](https://github.com/tributech-solutions/tributech-catalog-api) via REST, a default set of models gets loaded by default. These models can be found in the following repositories:
+
+[Tributech Data-Asset Models](https://github.com/tributech-solutions/data-asset-twin)
+
+[Tributech GAIA-X Self Description Models](https://github.com/tributech-solutions/gaia-x-self-descriptions)
 
 ## Development
 
