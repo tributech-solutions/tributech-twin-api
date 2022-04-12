@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Tributech.DataSpace.TwinAPI.Model;
+using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Controllers {
 

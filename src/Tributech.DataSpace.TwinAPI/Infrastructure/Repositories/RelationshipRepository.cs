@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Neo4jClient.Cypher;
 using Tributech.DataSpace.TwinAPI.Model;
+using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 	public class RelationshipRepository : IRelationshipRepository {

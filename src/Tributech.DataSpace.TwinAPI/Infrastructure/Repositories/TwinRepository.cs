@@ -1,22 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Neo4jClient;
 using Neo4jClient.Cypher;
+using Tributech.DataSpace.TwinAPI.Application.Schema;
+using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Model;
+using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 	public class TwinRepository : ITwinRepository {
 		private readonly ILogger<TwinRepository> _logger;
 		private readonly IGraphClient _client;
+		private readonly ISchemaService _schemaService;
 
 		public TwinRepository(
 			ILogger<TwinRepository> logger,
-			IGraphClient graphClient
+			IGraphClient graphClient,
+			ISchemaService schemaService
 			) {
 			_client = graphClient;
+			_schemaService = schemaService;
 			_logger = logger;
 		}
 
@@ -60,10 +67,20 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 		}
 
 		public async Task<DigitalTwin> UpsertTwinAsync(DigitalTwin twin) {
+			
+			List<string> labels = new List<string>();
+
+			// add twin model type (DTMI) as label
+			labels.Add(twin.Metadata.ModelId.ToLabel());
+
+			// add twin base model types (DTMI) as labels
+			IEnumerable<string> baseModelTypes = await _schemaService.GetBaseModels(twin.Metadata.ModelId, CancellationToken.None);
+			labels.AddRange(baseModelTypes.Select(dtmi => dtmi.ToLabel()).ToArray());
+
 			var results = await _client.Cypher
 					.Merge("(twin:Twin {Id: $id})")
 					.Set("twin = $twin")
-					.Set($"twin:{string.Join(":", twin.Labels)}") // labels do not fully support upsert (no removal of existing labels)
+					.Set($"twin:{string.Join(":", labels)}") // labels do not fully support upsert (no removal of existing labels)
 					.WithParam("twin", twin.ToDotNotationDictionary())
 					.WithParam("id", twin.Id)
 					.Return((twin) => twin.As<DigitalTwinNode>())
