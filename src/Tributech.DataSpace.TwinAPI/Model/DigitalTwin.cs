@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
+﻿using System.Dynamic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tributech.DSK.Twin.Core.Implementation.Api;

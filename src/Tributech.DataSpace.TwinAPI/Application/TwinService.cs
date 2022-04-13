@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Tributech.DataSpace.TwinAPI.Application.Exceptions;
+﻿using Tributech.DataSpace.TwinAPI.Application.Exceptions;
 using Tributech.DataSpace.TwinAPI.Extensions;
 using Tributech.DataSpace.TwinAPI.Infrastructure.Repository;
 using Tributech.Dsk.CatalogApi.Client;

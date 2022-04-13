@@ -23,6 +23,7 @@
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 

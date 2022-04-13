@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Tributech.DSK.Twin.Core.Implementation.Api;
+﻿using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Extensions {
 	public static class MappingExtensions {

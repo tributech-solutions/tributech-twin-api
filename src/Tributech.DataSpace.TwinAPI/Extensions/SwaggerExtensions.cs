@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Tributech.DataSpace.TwinAPI.Options;
-using System;
-using System.Linq;
 
 namespace Tributech.DataSpace.TwinAPI.Extensions {
 	public static class SwaggerUIOptionsExtensions {
