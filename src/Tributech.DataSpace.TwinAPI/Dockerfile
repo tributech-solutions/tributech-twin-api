@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim AS base
 LABEL vendor="Tributech.io Solutions"
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 WORKDIR /src
 COPY ["src/Tributech.DataSpace.TwinAPI/Tributech.DataSpace.TwinAPI.csproj", "src/Tributech.DataSpace.TwinAPI/"]
