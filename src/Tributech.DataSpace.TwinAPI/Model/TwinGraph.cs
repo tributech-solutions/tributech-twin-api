@@ -1,16 +1,7 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Model {
-	public class TwinGraph {
-
-		[JsonProperty("digitalTwins")]
-		public IEnumerable<DigitalTwin> DigitalTwins { get; set; }
-
-		[JsonProperty("relationships")]
-		public IEnumerable<Relationship> Relationships { get; set; }
-	}
-
 	public class TwinGraph<T, R> {
 
 		[JsonProperty("digitalTwins")]

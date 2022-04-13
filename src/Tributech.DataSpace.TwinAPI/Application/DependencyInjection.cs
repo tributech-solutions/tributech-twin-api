@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Tributech.DataSpace.TwinAPI.Application.Schema;
+﻿using Tributech.DataSpace.TwinAPI.Application.Schema;
 
 namespace Tributech.DataSpace.TwinAPI.Application {
 	public static class DependencyInjection {

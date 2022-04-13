@@ -1,34 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
+﻿using System.Dynamic;
 using Newtonsoft.Json;
+using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Model {
-	public class Relationship {
-
-		public Relationship() {
-			Properties = new Dictionary<string, object>();
-		}
-
-		[JsonProperty("$relationshipId")]
-		public Guid Id { get; set; }
-
-		[JsonProperty("$etag")]
-		public string ETag { get; set; }
-
-		[JsonProperty("$sourceId")]
-		public Guid SourceId { get; set; }
-
-		[JsonProperty("$targetId")]
-		public Guid TargetId { get; set; }
-
-		[JsonProperty("$relationshipName")]
-		public string Name { get; set; }
-
-		[JsonExtensionData]
-		public IDictionary<string, object> Properties { get; set; }
-	}
 
 	public class RelationshipNode {
 		public RelationshipNode() {

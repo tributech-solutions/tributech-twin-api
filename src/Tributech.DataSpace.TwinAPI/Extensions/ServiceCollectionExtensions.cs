@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Tributech.DataSpace.TwinAPI.Options;
+﻿using Tributech.DataSpace.TwinAPI.Options;
 
 namespace Tributech.DataSpace.TwinAPI.Extensions {
 	public static class ServiceCollectionExtensions {

@@ -1,53 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
+﻿using System.Dynamic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Model {
-	public class DigitalTwin {
-
-		/// <summary>
-		/// Default Neo4j labels for a twin.
-		/// </summary>
-		public static IEnumerable<string> DefaultLabels = new[] { "Twin" };
-
-		[JsonProperty("$dtId")]
-		public Guid Id { get; set; }
-
-		[JsonProperty("$etag")]
-		public string ETag { get; set; }
-
-		[JsonProperty("$metadata")]
-		public DigitalTwinMetadata Metadata { get; set; }
-
-		/// <summary>
-		/// Neo4J labels for the twin.
-		/// Default labels: "Twin".
-		/// The property which is only used internally is not getting serialized.
-		/// </summary>
-		[JsonIgnore]
-		public List<string> Labels { get; private set; } = DefaultLabels.ToList();
-
-		/// <summary>
-		/// Add Neo4J labels (names should be PascalCase).
-		/// </summary>
-		/// <param name="labels"></param>
-		public void AddLabels(params string[] labels) => Labels.AddRange(labels);
-
-		[JsonExtensionData]
-		public IDictionary<string, object> Properties;
-
-		public DigitalTwin() {
-			Properties = new Dictionary<string, object>();
-		}
-	}
-
-	public class DigitalTwinMetadata {
-		[JsonProperty("$model")]
-		public string ModelId { get; set; }
-	}
 
 	public class DigitalTwinNode {
 		public Guid Id { get; set; }
@@ -55,7 +11,7 @@ namespace Tributech.DataSpace.TwinAPI.Model {
 		public string ModelId { get; set; }
 
 		[JsonExtensionData]
-		public IDictionary<string, object> Properties;
+		public Dictionary<string, object> Properties;
 
 		public DigitalTwinNode() {
 			Properties = new Dictionary<string, object>();

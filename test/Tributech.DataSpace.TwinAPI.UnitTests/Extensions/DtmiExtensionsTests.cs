@@ -1,5 +1,4 @@
-﻿using System;
-using Tributech.DataSpace.TwinAPI.Extensions;
+﻿using Tributech.DataSpace.TwinAPI.Extensions;
 using Xunit;
 
 namespace Tributech.DataSpace.TwinAPI.UnitTests {

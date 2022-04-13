@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>Tributech.DataSpace.TwinAPI</RootNamespace>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>..\..</DockerfileContext>
@@ -11,13 +12,14 @@
 	<ItemGroup>
 		<PackageReference Include="Hellang.Middleware.ProblemDetails" Version="5.4.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.4" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
 		<PackageReference Include="Neo4jClient" Version="4.1.18" />
 		<PackageReference Include="Polly" Version="7.2.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.3" />
 		<PackageReference Include="Tributech.Dsk.CatalogApi.Client" Version="1.10.0" />
+		<PackageReference Include="Tributech.DSK.Twin.Core" Version="0.1.0-savemodifiedtwin0049" />
 	</ItemGroup>
 
 	<PropertyGroup>
