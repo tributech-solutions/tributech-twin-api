@@ -25,7 +25,7 @@ namespace Tributech.DataSpace.TwinAPI.Application {
 				throw new InstanceValidationException(validationResult.Errors.MapToModel());
 			}
 
-			twin = await UpsertTwinInternalAsync(twin);
+			twin = await UpsertTwinInternalAsync(twin, cancellationToken);
 
 			return twin;
 		}
@@ -36,7 +36,7 @@ namespace Tributech.DataSpace.TwinAPI.Application {
 				throw new InstanceValidationException(validationResult.Errors.MapToModel());
 			}
 
-			DigitalTwin[] twins = await Task.WhenAll(twinGraph?.DigitalTwins?.Select(twin => UpsertTwinInternalAsync(twin)) ?? Enumerable.Empty<Task<DigitalTwin>>());
+			DigitalTwin[] twins = await Task.WhenAll(twinGraph?.DigitalTwins?.Select(twin => UpsertTwinInternalAsync(twin, cancellationToken)) ?? Enumerable.Empty<Task<DigitalTwin>>());
 			DSK.Twin.Core.Implementation.Api.Relationship[] relationships = await Task.WhenAll(twinGraph?.Relationships?.Select(rel => _relRepository.CreateRelationshipAsync(rel)) ?? Enumerable.Empty<Task<DSK.Twin.Core.Implementation.Api.Relationship>>());
 
 			return new TwinGraph {
@@ -45,8 +45,8 @@ namespace Tributech.DataSpace.TwinAPI.Application {
 			};
 		}
 
-		private async Task<DigitalTwin> UpsertTwinInternalAsync(DigitalTwin twin) {
-			return await _twinRepository.UpsertTwinAsync(twin);
+		private async Task<DigitalTwin> UpsertTwinInternalAsync(DigitalTwin twin, CancellationToken cancellationToken) {
+			return await _twinRepository.UpsertTwinAsync(twin, cancellationToken);
 		}
 	}
 }

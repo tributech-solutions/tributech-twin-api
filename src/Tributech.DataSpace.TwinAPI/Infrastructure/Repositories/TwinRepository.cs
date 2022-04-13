@@ -66,7 +66,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			return new PaginatedResponse<DigitalTwin>(count, mappedResults);
 		}
 
-		public async Task<DigitalTwin> UpsertTwinAsync(DigitalTwin twin) {
+		public async Task<DigitalTwin> UpsertTwinAsync(DigitalTwin twin, CancellationToken cancellationToken) {
 			
 			List<string> labels = new List<string>();
 
@@ -74,7 +74,7 @@ namespace Tributech.DataSpace.TwinAPI.Infrastructure.Repository {
 			labels.Add(twin.Metadata.ModelId.ToLabel());
 
 			// add twin base model types (DTMI) as labels
-			IEnumerable<string> baseModelTypes = await _schemaService.GetBaseModels(twin.Metadata.ModelId, CancellationToken.None);
+			IEnumerable<string> baseModelTypes = await _schemaService.GetBaseModels(twin.Metadata.ModelId, cancellationToken);
 			labels.AddRange(baseModelTypes.Select(dtmi => dtmi.ToLabel()).ToArray());
 
 			var results = await _client.Cypher
