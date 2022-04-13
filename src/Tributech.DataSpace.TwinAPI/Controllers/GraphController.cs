@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Tributech.DataSpace.TwinAPI.Application;
 using Tributech.DataSpace.TwinAPI.Application.Exceptions;
 using Tributech.DataSpace.TwinAPI.Extensions;

@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Tributech.DataSpace.TwinAPI.Application.Exceptions;
+﻿using Tributech.DataSpace.TwinAPI.Application.Exceptions;
 using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Application {

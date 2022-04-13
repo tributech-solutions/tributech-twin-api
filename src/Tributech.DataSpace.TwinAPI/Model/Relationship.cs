@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
+﻿using System.Dynamic;
 using Newtonsoft.Json;
 using Tributech.DSK.Twin.Core.Implementation.Api;
 
 namespace Tributech.DataSpace.TwinAPI.Model {
-	
+
 	public class RelationshipNode {
 		public RelationshipNode() {
 			Properties = new Dictionary<string, object>();
