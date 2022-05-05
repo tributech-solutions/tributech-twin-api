@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>89eac4e7-4d8d-41b2-92c6-54e5c950ce7d</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/</DockerServiceUrl>
     <DockerServiceName>twin-api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
